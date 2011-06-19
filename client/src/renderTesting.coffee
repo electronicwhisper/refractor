@@ -92,4 +92,16 @@ tile = render.makeFilter """
 
 render.setPipeline("sample.png", identity, identity, kaleido)
 
-setInterval(render.render, 1000 / 30);
+render.setResolution(window.innerWidth, window.innerHeight)
+
+console.log(render.getParameters(3))
+
+render.setParameters(3, {time: 0})
+
+t = 0
+setInterval(() ->
+  render.setParameters(3, {time: t += 0.01})
+  render.render()
+, 1000 / 30);
+
+
