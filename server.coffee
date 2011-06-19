@@ -2,12 +2,11 @@ clients = {}
 
 state =
   initialTexture: "images/textures/sample.png",
-  filters: ["identity", "kaleido", "tile"],
-  parameters: [
-    {},
-    {phase: 0.5, sides: "ascending"},
-    {amount: "oscillating"}
-  ]
+  filters: [
+    { name: "identity" },
+    { name: "identity" },
+    { name: "identity" }]
+
 
 exports.initializeClient = (client) ->
   console.log("client initialized: " + client.sessionId)

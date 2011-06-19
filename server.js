@@ -3,13 +3,13 @@
   clients = {};
   state = {
     initialTexture: "images/textures/sample.png",
-    filters: ["identity", "kaleido", "tile"],
-    parameters: [
-      {}, {
-        phase: 0.5,
-        sides: "ascending"
+    filters: [
+      {
+        name: "identity"
       }, {
-        amount: "oscillating"
+        name: "identity"
+      }, {
+        name: "identity"
       }
     ]
   };
