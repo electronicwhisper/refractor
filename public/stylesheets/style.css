@@ -46,6 +46,11 @@ div {
 #second-arrow { left: 395px; top: 100px; }
 #third-arrow  { left: 585px; top: 100px; }
 
+#texture-input { position: absolute; bottom: 0px; left: 30px; }
+.filter-select { position: absolute; }
+#first-filter-select  { bottom: 0px; left: 270px; }
+#second-filter-select { bottom: 0px; left: 465px; }
+#third-filter-select  { bottom: 0px; left: 660px; }
 
 .plug, #input-box {
     display:inline-block;
