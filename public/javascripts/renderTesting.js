@@ -1,7 +1,7 @@
 (function() {
   /*
   TESTING
-  */  var canvas, t;
+  */  var canvas;
   canvas = render.init();
   document.getElementById('container').appendChild(canvas);
   render.setResolution(window.innerWidth, window.innerHeight);
@@ -35,9 +35,5 @@
     ]
   };
   state.set(window.sampleState);
-  t = 0.0;
-  setInterval(function() {
-    t = (t + 0.01) % 1;
-    return render.render();
-  }, 1000 / 30);
+  time.start();
 }).call(this);

@@ -45,10 +45,4 @@ window.sampleState = {
 state.set window.sampleState
 
 
-
-t = 0.0
-setInterval(() ->
-  t = (t + 0.01) % 1
-  # render.setParameters(3, {phase: t})
-  render.render()
-, 1000 / 30);
+time.start()
