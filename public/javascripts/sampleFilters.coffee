@@ -61,16 +61,61 @@ window.filters = {
     
     void main(void)
     {
-        vec2 p = gl_FragCoord.xy / resolution.xy;
+        vec2 p = -0.5 + gl_FragCoord.xy / resolution.xy;
         
-        p.x = fract(p.x * 64.0 * amount);
-        p.y = fract(p.y * 64.0 * amount);
+        p = p * 12.0 * amount;
         
         vec2 uv;
-        uv.x = p.x;
-        uv.y = 1.0 - p.y;
+        uv.x = (p.x + 0.5);
+        uv.y = (0.5 - p.y);
         
-        vec3 col = texture2D(tex0, uv).xyz;
+        vec3 col = texture2D(tex0, fract(uv)).xyz;
+        
+        gl_FragColor = vec4(col,1.0);
+    }
+    """
+  mirrorH: """
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+    
+    uniform vec2 resolution;
+    uniform sampler2D tex0;
+    
+    uniform float phase;
+    
+    void main(void)
+    {
+        vec2 p = -0.5 + gl_FragCoord.xy / resolution.xy;
+        
+        vec2 uv;
+        uv.x = abs(p.x) + phase / 2.0;
+        uv.y = (0.5 - p.y);
+        
+        vec3 col = texture2D(tex0, fract(uv)).xyz;
+        
+        gl_FragColor = vec4(col,1.0);
+    }
+    """
+  mirrorV: """
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+    
+    uniform vec2 resolution;
+    uniform sampler2D tex0;
+    
+    uniform float phase;
+    
+    void main(void)
+    {
+        vec2 p = -0.5 + gl_FragCoord.xy / resolution.xy;
+        
+        vec2 uv;
+        uv.x = p.x + 0.5;
+        uv.y = abs(p.y) + phase / 2.0;
+        
+        vec3 col = texture2D(tex0, fract(uv)).xyz;
         
         gl_FragColor = vec4(col,1.0);
     }

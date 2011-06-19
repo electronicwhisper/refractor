@@ -18,7 +18,7 @@ tile = render.makeFilter filters.tile
 
 
 
-render.setPipeline("images/textures/sample.png", identity, identity, kaleido)
+render.setPipeline("images/textures/sample.png", identity, identity, render.makeFilter filters.kaleido)
 
 render.setResolution(window.innerWidth, window.innerHeight)
 
