@@ -7,9 +7,12 @@ processData = (data) ->
 
 connect = () ->
   socket = new io.Socket()
-  socket.on('connect', () -> null)
+  socket.on('connect', () -> console.log("Connected!"))
   socket.on('message', (data) -> processData(JSON.parse(data)))
   socket.connect()
+
+loadFilters = (filters) ->
+
 
 initializeUI = () ->
   $('button').click (e) ->
@@ -17,6 +20,7 @@ initializeUI = () ->
       type: "ping"
       payload: "Hello"
     socket.send(JSON.stringify(msg))
+  loadFilters(window.filters)
 
 $(document).ready ->
   connect()

@@ -3,6 +3,7 @@
  * Module dependencies.
  */
 
+var server  = require('./server.js');
 var express = require('express');
 var io      = require('socket.io');
 
@@ -38,13 +39,12 @@ app.get('/', function(req, res){
 var io = io.listen(app);
 
 io.on('connection', function (client) {
+    server.initializeClient(client);
 
     client.on('message', function (message) {
-        console.log('client ' + client.sessionId + ' sent message: ' + message);
-        client.broadcast(message);
+        server.handleClientMessage(client, message);
     });
-    client.on('disconnect', function() {
-    })
+    client.on('disconnect', function() { server.disconnectClient(client); });
 });
 
 

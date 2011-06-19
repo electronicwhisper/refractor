@@ -11,31 +11,23 @@ div {
     padding: 0;
     margin: 0;
 }
-
-#container {
-    position: relative;
-    
 }
 
 #player {
-    border: 1px solid black;
-    width: 800px;
-    height: 600px;
+    width: 100%
+    height: 100%
 }
 
 #workflow {
     width: 800px;
     height: 200px;
-    border: 1px solid black;
-}
+    bottom: 15px;
 
-#library {
     position: absolute;
-    left: 800px;
-    width: 175px;
-    height: 800px;
+    margin-left: -400px;
+    left: 50%;
+
     border: 1px solid black;
-    scroll: auto;
 }
 
 #input-box {
@@ -47,14 +39,25 @@ div {
 
     
 }
-.arrow {
-    display:inline-block;
-}
 
-.plug {
+.arrow { display:inline-block; position: absolute; }
+
+#first-arrow  { left: 200px; top: 100px; }
+#second-arrow { left: 395px; top: 100px; }
+#third-arrow  { left: 585px; top: 100px; }
+
+
+.plug, #input-box {
     display:inline-block;
     height: 150px;
     width: 150px;
+    margin: 20px;
     border: 1px solid black;
-    margin: 15px;
+}
+#input-box { margin-left: 35px; }
+
+#ping {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
 }
