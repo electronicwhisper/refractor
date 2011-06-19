@@ -26,6 +26,8 @@ make2dShader = (data, fragmentShaderCode) ->
 context = new GLOW.Context()
 document.getElementById( 'container' ).appendChild( context.domElement )
 
+window.context = context
+
 
 
 FBO = new GLOW.FBO()
@@ -72,7 +74,8 @@ kaleido = make2dShader(
   {
     resolution: new GLOW.Vector2(window.innerWidth, window.innerHeight)
     # tex0: new GLOW.Texture( "clouds.jpg" )
-    tex0: FBO
+    tex0: new GLOW.Texture("http://a0.twimg.com/profile_images/393262736/n636211541_7004_reasonably_small.jpg")
+    # tex0: FBO
     time: new GLOW.Float()
     
 
@@ -85,7 +88,6 @@ kaleido = make2dShader(
   uniform vec2 resolution;
   uniform float time;
   uniform sampler2D tex0;
-  uniform sampler2D tex1;
 
   void main(void)
   {
@@ -98,11 +100,11 @@ kaleido = make2dShader(
       uv.x =          7.0*a/3.1416;
       uv.y = -time+ sin(7.0*r+time) + .7*cos(time+7.0*a);
 
-      float w = .5+.5*(sin(time+7.0*r)+ .7*cos(time+7.0*a));
+      //float w = .5+.5*(sin(time+7.0*r)+ .7*cos(time+7.0*a));
 
       vec3 col =  texture2D(tex0,uv*.5).xyz;
 
-      gl_FragColor = vec4(col*w,1.0);
+      gl_FragColor = vec4(col,1.0);
   }
   """
 )
