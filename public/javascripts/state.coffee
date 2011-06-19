@@ -1,4 +1,4 @@
-state = null
+currentState = null
 
 ###
 sample state:
@@ -15,20 +15,33 @@ sample state:
 
 ###
 
+# from: http://coffeescriptcookbook.com/chapters/classes_and_objects/cloning
+clone = (obj) ->
+  if not obj? or typeof obj isnt 'object'
+    return obj
+  newInstance = new obj.constructor()
+  for key of obj
+    newInstance[key] = clone obj[key]
+  return newInstance
+
+
+
 window.state = {
   set: (newState) ->
+    # ===================================
     # call appropriate render methods
-    if !state
+    # ===================================
+    if !currentState
       # initializing a new state
       render.setPipeline(newState.initialTexture, (render.makeFilter(filters[filterName].code) for filterName in newState.filters)...)
     else
       # replace initialTexture if it's new
-      if newState.initialTexture != state.initialTexture
+      if newState.initialTexture != currentState.initialTexture
         render.replaceInitialTexture(newState.initialTexture)
       
       # replace filters if they're new
       for filterName, i in newState.filters
-        if filterName != state.filters[i]
+        if filterName != currentState.filters[i]
           render.replaceFilter(i+1, render.makeFilter(filters[filterName].code))
     
     # set parameters
@@ -38,11 +51,13 @@ window.state = {
         if typeof v == "number"
           numericalParams[k] = v
       render.setParameters(i+1, numericalParams)
-  
     
+    
+    # ===================================
     # call appropriate ui methods
+    # ===================================
     # TODO Scott
     
-    state = newState
-  get: () -> state
+    currentState = clone(newState)
+  get: () -> currentState
 }

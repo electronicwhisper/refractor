@@ -1,7 +1,7 @@
 (function() {
-  var state;
+  var clone, currentState;
   var __slice = Array.prototype.slice;
-  state = null;
+  currentState = null;
   /*
   sample state:
   
@@ -16,10 +16,21 @@
   }
   
   */
+  clone = function(obj) {
+    var key, newInstance;
+    if (!(obj != null) || typeof obj !== 'object') {
+      return obj;
+    }
+    newInstance = new obj.constructor();
+    for (key in obj) {
+      newInstance[key] = clone(obj[key]);
+    }
+    return newInstance;
+  };
   window.state = {
     set: function(newState) {
       var filterName, i, k, numericalParams, paramSet, v, _len, _len2, _ref, _ref2;
-      if (!state) {
+      if (!currentState) {
         render.setPipeline.apply(render, [newState.initialTexture].concat(__slice.call((function() {
           var _i, _len, _ref, _results;
           _ref = newState.filters;
@@ -31,13 +42,13 @@
           return _results;
         })())));
       } else {
-        if (newState.initialTexture !== state.initialTexture) {
+        if (newState.initialTexture !== currentState.initialTexture) {
           render.replaceInitialTexture(newState.initialTexture);
         }
         _ref = newState.filters;
         for (i = 0, _len = _ref.length; i < _len; i++) {
           filterName = _ref[i];
-          if (filterName !== state.filters[i]) {
+          if (filterName !== currentState.filters[i]) {
             render.replaceFilter(i + 1, render.makeFilter(filters[filterName].code));
           }
         }
@@ -54,10 +65,10 @@
         }
         render.setParameters(i + 1, numericalParams);
       }
-      return state = newState;
+      return currentState = clone(newState);
     },
     get: function() {
-      return state;
+      return currentState;
     }
   };
 }).call(this);
