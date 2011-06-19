@@ -57,9 +57,11 @@
     setResolution: function(width, height) {
       resolutionWidth = width;
       resolutionHeight = height;
-      filter1.resolution.set(resolutionWidth, resolutionHeight);
-      filter2.resolution.set(resolutionWidth, resolutionHeight);
-      return filter3.resolution.set(resolutionWidth, resolutionHeight);
+      if (filter1) {
+        filter1.resolution.set(resolutionWidth, resolutionHeight);
+        filter2.resolution.set(resolutionWidth, resolutionHeight);
+        return filter3.resolution.set(resolutionWidth, resolutionHeight);
+      }
     },
     /*
       ==========================================================
