@@ -5,7 +5,7 @@
 
 var server  = require('./server.js');
 var express = require('express');
-var io      = require('socket.io');
+var sio     = require('socket.io');
 
 var app = module.exports = express.createServer();
 
@@ -36,7 +36,7 @@ app.get('/', function(req, res){
     });
 });
 
-var io = io.listen(app);
+var io = sio.listen(app);
 
 io.on('connection', function (client) {
     server.initializeClient(client);
