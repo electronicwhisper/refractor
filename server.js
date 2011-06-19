@@ -1,6 +1,18 @@
 (function() {
-  var clients;
+  var clients, state;
   clients = {};
+  state = {
+    initialTexture: "images/textures/sample.png",
+    filters: ["identity", "kaleido", "tile"],
+    parameters: [
+      {}, {
+        phase: 0.5,
+        sides: "ascending"
+      }, {
+        amount: "oscillating"
+      }
+    ]
+  };
   exports.initializeClient = function(client) {
     return console.log("client initialized: " + client.sessionId);
   };
