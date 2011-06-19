@@ -90,7 +90,7 @@ tile = render.makeFilter """
 
 
 
-render.setPipeline("sample.png", identity, identity, kaleido)
+render.setPipeline("images/textures/sample.png", identity, identity, kaleido)
 
 render.setResolution(window.innerWidth, window.innerHeight)
 
