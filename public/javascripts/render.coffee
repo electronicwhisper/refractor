@@ -121,6 +121,7 @@ render = window.render = {
   getParameters: (filterNum) ->
     f = if filterNum == 1 then filter1 else if filterNum == 2 then filter2 else filter3
     parameters = {}
+    console.log(f)
     for own k, v of f.uniforms
       if v.type == 5126 # check if it's a float
         parameters[k] = v.data.value[0]
@@ -194,6 +195,7 @@ render = window.render = {
     while (myArray = re.exec(fragmentShaderCode)) != null
       shaderInfo.data[myArray[1]] = new GLOW.Float(0.5)
     
+    console.log shaderInfo
     shaderInfo
 }
 
