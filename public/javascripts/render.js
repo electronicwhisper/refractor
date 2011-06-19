@@ -106,7 +106,6 @@
       var f, k, parameters, v, _ref;
       f = filterNum === 1 ? filter1 : filterNum === 2 ? filter2 : filter3;
       parameters = {};
-      console.log(f);
       _ref = f.uniforms;
       for (k in _ref) {
         if (!__hasProp.call(_ref, k)) continue;
@@ -177,7 +176,6 @@
       while ((myArray = re.exec(fragmentShaderCode)) !== null) {
         shaderInfo.data[myArray[1]] = new GLOW.Float(0.5);
       }
-      console.log(shaderInfo);
       return shaderInfo;
     }
   };

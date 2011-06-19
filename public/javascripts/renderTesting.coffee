@@ -5,20 +5,14 @@ TESTING
 canvas = render.init()
 document.getElementById( 'container' ).appendChild(canvas)
 
-kaleido = render.makeFilter filters.kaleido
-
-
-
-identity = render.makeFilter filters.identity
-
-
-
-tile = render.makeFilter filters.tile
+kaleido = render.makeFilter filters.kaleido.code
+identity = render.makeFilter filters.identity.code
+tile = render.makeFilter filters.tile.code
 
 
 
 
-render.setPipeline("images/textures/sample.png", identity, identity, render.makeFilter filters.kaleido)
+render.setPipeline("images/textures/sample.png", identity, identity, kaleido)
 
 render.setResolution(window.innerWidth, window.innerHeight)
 
