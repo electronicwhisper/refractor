@@ -7,11 +7,33 @@
   
   {
     initialTexture: "images/textures/sample.png",
-    filters: ["identity", "kaleido", "tile"],
-    parameters: [
-      {},
-      {phase: 0.5, sides: "ascending"},
-      {amount: "oscillating"}
+    filters: [
+      {
+        name: "identity",
+        parameters: {}
+      },
+      {
+        name: "kaleido",
+        parameters: {
+          phase: {
+            value: 0.5,
+            lastEdit: 3
+          },
+          sides: {
+            value: "ascending",
+            lastEdit: 4
+          }
+        }
+      },
+      {
+        name: "tile",
+        parameters: {
+          amount: {
+            value: "oscillating",
+            lastEdit: 1
+          }
+        }
+      }
     ]
   }
   
@@ -29,15 +51,15 @@
   };
   window.state = {
     set: function(newState) {
-      var filterName, i, k, numericalParams, paramSet, v, _len, _len2, _ref, _ref2;
+      var filter, i, k, numericalParams, v, _len, _len2, _ref, _ref2, _ref3;
       if (!currentState) {
         render.setPipeline.apply(render, [newState.initialTexture].concat(__slice.call((function() {
           var _i, _len, _ref, _results;
           _ref = newState.filters;
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            filterName = _ref[_i];
-            _results.push(render.makeFilter(filters[filterName].code));
+            filter = _ref[_i];
+            _results.push(render.makeFilter(filters[filter.name].code));
           }
           return _results;
         })())));
@@ -47,20 +69,21 @@
         }
         _ref = newState.filters;
         for (i = 0, _len = _ref.length; i < _len; i++) {
-          filterName = _ref[i];
-          if (filterName !== currentState.filters[i]) {
-            render.replaceFilter(i + 1, render.makeFilter(filters[filterName].code));
+          filter = _ref[i];
+          if (filter.name !== currentState.filters[i].name) {
+            render.replaceFilter(i + 1, render.makeFilter(filters[filter.name].code));
           }
         }
       }
-      _ref2 = newState.parameters;
+      _ref2 = newState.filters;
       for (i = 0, _len2 = _ref2.length; i < _len2; i++) {
-        paramSet = _ref2[i];
+        filter = _ref2[i];
         numericalParams = {};
-        for (k in paramSet) {
-          v = paramSet[k];
-          if (typeof v === "number") {
-            numericalParams[k] = v;
+        _ref3 = filter.parameters;
+        for (k in _ref3) {
+          v = _ref3[k];
+          if (typeof v.value === "number") {
+            numericalParams[k] = v.value;
           }
         }
         render.setParameters(i + 1, numericalParams);

@@ -7,13 +7,30 @@
   render.setResolution(window.innerWidth, window.innerHeight);
   window.sampleState = {
     initialTexture: "images/textures/sample.png",
-    filters: ["identity", "kaleido", "tile"],
-    parameters: [
-      {}, {
-        phase: 0.5,
-        sides: "ascending"
+    filters: [
+      {
+        name: "identity",
+        parameters: {}
       }, {
-        amount: 0.1
+        name: "kaleido",
+        parameters: {
+          phase: {
+            value: 0.5,
+            lastEdit: 3
+          },
+          sides: {
+            value: "ascending",
+            lastEdit: 4
+          }
+        }
+      }, {
+        name: "tile",
+        parameters: {
+          amount: {
+            value: "oscillating",
+            lastEdit: 1
+          }
+        }
       }
     ]
   };
