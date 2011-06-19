@@ -30,9 +30,10 @@ app.configure('production', function(){
 
 app.get('/', function(req, res){
   res.render('index', {
-    title: 'Express'
+    title: 'Refractor'
   });
 });
 
+var port = process.env.PORT || 3000;
 app.listen(3000);
 console.log("Express server listening on port %d", app.address().port);

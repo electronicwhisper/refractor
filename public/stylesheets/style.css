@@ -6,3 +6,55 @@ body {
 a {
   color: #00B7FF;
 }
+
+div {
+    padding: 0;
+    margin: 0;
+}
+
+#container {
+    position: relative;
+    
+}
+
+#player {
+    border: 1px solid black;
+    width: 800px;
+    height: 600px;
+}
+
+#workflow {
+    width: 800px;
+    height: 200px;
+    border: 1px solid black;
+}
+
+#library {
+    position: absolute;
+    left: 800px;
+    width: 175px;
+    height: 800px;
+    border: 1px solid black;
+    scroll: auto;
+}
+
+#input-box {
+    display:inline-block;
+    height: 150px;
+    width: 150px;
+    border: 1px solid black;
+    margin: 20px;
+
+    
+}
+.arrow {
+    display:inline-block;
+}
+
+.plug {
+    display:inline-block;
+    height: 150px;
+    width: 150px;
+    border: 1px solid black;
+    margin: 15px;
+}
