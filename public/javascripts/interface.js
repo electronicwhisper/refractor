@@ -1,8 +1,9 @@
 (function() {
-  var changeFilter, changeTexture, connect, filterIds, filters, initializeUI, processData, socket;
+  var buildRangeCallback, changeFilter, changeParameterValue, changeTexture, connect, filterDefinitionIds, filterSelectIds, filters, initializeUI, processData, socket;
   socket = null;
   filters = {};
-  filterIds = ["first-filter-select", "second-filter-select", "third-filter-select"];
+  filterDefinitionIds = ["first-plug", "second-plug", "third-plug"];
+  filterSelectIds = ["first-filter-select", "second-filter-select", "third-filter-select"];
   processData = function(data) {
     switch (data.type) {
       case "ping":
@@ -43,7 +44,6 @@
     _ref = window.filters[filterKey].defaults;
     for (k in _ref) {
       v = _ref[k];
-      console.log("setting", filterKey, k, v);
       params[k] = {
         value: v
       };
@@ -51,6 +51,19 @@
     payload = {
       name: filterKey,
       parameters: params
+    };
+    state.applyDiff(path, payload);
+    return socket.send({
+      type: "update",
+      statePath: path,
+      newValue: payload
+    });
+  };
+  changeParameterValue = function(filterIndex, parameterName, value) {
+    var path, payload;
+    path = ['filters', filterIndex, "parameters", parameterName];
+    payload = {
+      'value': value
     };
     state.applyDiff(path, payload);
     return socket.send({
@@ -71,7 +84,7 @@
     });
     $('.filter-select').change(function(e) {
       var filterIndex, newFilter;
-      filterIndex = filterIds.indexOf(e.srcElement.id);
+      filterIndex = filterSelectIds.indexOf(e.srcElement.id);
       newFilter = $(e.srcElement).val();
       return changeFilter(filterIndex, newFilter);
     });
@@ -94,16 +107,38 @@
     state.set(state.sampleState);
     return time.start();
   });
+  buildRangeCallback = function(filterIndex, propertyName) {
+    return function(e) {
+      var value;
+      value = parseInt(e.srcElement.value, 10) / 100;
+      return changeParameterValue(filterIndex, propertyName, value);
+    };
+  };
   window.interface = {
     buildInterface: function(state) {
-      var element, filter, i, _len, _ref, _results;
+      var bundle, definition, filter, filterIndex, name, range, selectElement, _len, _ref, _results;
       $('#texture-input input').val(state.initialTexture);
+      $('#input-box img').attr('src', state.initialTexture);
       _ref = state.filters;
       _results = [];
-      for (i = 0, _len = _ref.length; i < _len; i++) {
-        filter = _ref[i];
-        element = $("#" + filterIds[i]);
-        _results.push(element.val(filter.name));
+      for (filterIndex = 0, _len = _ref.length; filterIndex < _len; filterIndex++) {
+        filter = _ref[filterIndex];
+        selectElement = document.getElementById(filterSelectIds[filterIndex]);
+        selectElement.value = filter.name;
+        definition = $(document.getElementById(filterDefinitionIds[filterIndex]));
+        definition.empty();
+        _results.push((function() {
+          var _ref2, _results2;
+          _ref2 = filter.parameters;
+          _results2 = [];
+          for (name in _ref2) {
+            bundle = _ref2[name];
+            console.log(name, bundle.value);
+            range = $('<input type="range" min="0" max="100" step="1">').change(buildRangeCallback(filterIndex, name)).val(bundle.value * 100);
+            _results2.push(definition.append($("<div>").append($('<span>').text(name), range)));
+          }
+          return _results2;
+        })());
       }
       return _results;
     }

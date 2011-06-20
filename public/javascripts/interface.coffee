@@ -1,7 +1,8 @@
 socket = null
 filters = {}
 
-filterIds = ["first-filter-select", "second-filter-select", "third-filter-select"]
+filterDefinitionIds = ["first-plug", "second-plug", "third-plug"]
+filterSelectIds     = ["first-filter-select", "second-filter-select", "third-filter-select"]
 
 processData = (data) ->
   switch(data.type)
@@ -26,9 +27,14 @@ changeFilter = (filterIndex, filterKey) ->
   path = ['filters', filterIndex]
   params = {}
   for k, v of window.filters[filterKey].defaults
-    console.log("setting", filterKey, k, v)
     params[k] = { value: v }
   payload = { name: filterKey, parameters: params }
+  state.applyDiff(path, payload)
+  socket.send({ type: "update", statePath: path, newValue: payload })
+
+changeParameterValue = (filterIndex, parameterName, value) ->
+  path = ['filters', filterIndex, "parameters", parameterName]
+  payload = { 'value': value }
   state.applyDiff(path, payload)
   socket.send({ type: "update", statePath: path, newValue: payload })
 
@@ -37,7 +43,7 @@ initializeUI = () ->
     msg = { type: "ping", payload: "Hello" }
     socket.send(JSON.stringify(msg))
   $('.filter-select').change (e) ->
-    filterIndex = filterIds.indexOf(e.srcElement.id)
+    filterIndex = filterSelectIds.indexOf(e.srcElement.id)
     newFilter = $(e.srcElement).val()
     changeFilter(filterIndex, newFilter)
   $('#texture-input input').change (e) ->
@@ -54,10 +60,28 @@ $(document).ready ->
   state.set(state.sampleState)
   time.start()
 
+buildRangeCallback = (filterIndex, propertyName) ->
+  (e) ->
+    value = parseInt(e.srcElement.value, 10) / 100
+    changeParameterValue(filterIndex, propertyName, value)
+
+
 window.interface = {
+
   buildInterface: (state) ->
     $('#texture-input input').val(state.initialTexture)
-    for filter, i in state.filters
-      element = $("#" + filterIds[i])
-      element.val(filter.name)
+    $('#input-box img').attr('src', state.initialTexture)
+    for filter, filterIndex in state.filters
+      selectElement = document.getElementById(filterSelectIds[filterIndex])
+      selectElement.value = filter.name
+      definition = $(document.getElementById(filterDefinitionIds[filterIndex]))
+      definition.empty()
+
+      for name, bundle of filter.parameters
+        console.log(name, bundle.value)
+        range = $('<input type="range" min="0" max="100" step="1">')
+          .change(buildRangeCallback(filterIndex, name))
+          .val(bundle.value * 100)
+        definition.append($("<div>").append($('<span>').text(name), range))
+
 }

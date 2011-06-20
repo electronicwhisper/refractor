@@ -39,7 +39,7 @@ canvas {
     height: 150px;
     width: 150px;
     border: 1px solid black;
-    margin: 20px;   
+    margin: 20px;
 }
 
 .arrow        { display:inline-block; position: absolute; }
@@ -54,12 +54,27 @@ canvas {
 #third-filter-select  { bottom: 0px; left: 660px; }
 
 .plug, #input-box {
-    display:inline-block;
-    height: 150px;
-    width: 150px;
+    float: left;
+    height: 140px;
+    width: 140px;
     margin: 20px;
     border: 1px solid black;
+
+    font-size: 12px;
+    padding: 5px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
+
+#input-box img {
+    height: 100%;
+    width: 100%;
+}
+
+.plug input[type="range"] {
+    width: 100%;
+}
+
 #input-box { margin-left: 35px; }
 
 #ping {

@@ -16,18 +16,23 @@ window.state = {
     # ===================================
     # call appropriate render methods
     # ===================================
+
+    shouldRebuild = false
     if !currentState
       # initializing a new state
       render.setPipeline(newState.initialTexture, (render.makeFilter(filters[filter.name].code) for filter in newState.filters)...)
+      shouldRebuild = true
     else
       # replace initialTexture if it's new
       if newState.initialTexture != currentState.initialTexture
         render.replaceInitialTexture(newState.initialTexture)
+        shouldRebuild = true
 
       # replace filters if they're new
       for filter, i in newState.filters
         if filter.name != currentState.filters[i].name
           render.replaceFilter(i+1, render.makeFilter(filters[filter.name].code))
+          shouldRebuild = true
 
     # set parameters
     for filter, i in newState.filters
@@ -37,7 +42,8 @@ window.state = {
           numericalParams[k] = v.value
       render.setParameters(i+1, numericalParams)
 
-    interface.buildInterface(newState)
+    if shouldRebuild
+      interface.buildInterface(newState)
     currentState = clone(newState)
   get: () -> currentState
   applyDiff: (path, newValue) ->
@@ -50,6 +56,7 @@ window.state = {
       node = node[component]
     lastComponent = path[path.length - 1]
     node[lastComponent] = newValue
+    console.log("has set", root, lastComponent, newValue)
     state.set(root)
 }
 
@@ -68,7 +75,7 @@ window.state.sampleState = {
           lastEdit: 3
         },
         sides: {
-          value: "ascending",
+          value: 0.5,
           lastEdit: 4
         }
       }

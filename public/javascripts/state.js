@@ -15,7 +15,8 @@
   };
   window.state = {
     set: function(newState) {
-      var filter, i, k, numericalParams, v, _len, _len2, _ref, _ref2, _ref3;
+      var filter, i, k, numericalParams, shouldRebuild, v, _len, _len2, _ref, _ref2, _ref3;
+      shouldRebuild = false;
       if (!currentState) {
         render.setPipeline.apply(render, [newState.initialTexture].concat(__slice.call((function() {
           var _i, _len, _ref, _results;
@@ -27,15 +28,18 @@
           }
           return _results;
         })())));
+        shouldRebuild = true;
       } else {
         if (newState.initialTexture !== currentState.initialTexture) {
           render.replaceInitialTexture(newState.initialTexture);
+          shouldRebuild = true;
         }
         _ref = newState.filters;
         for (i = 0, _len = _ref.length; i < _len; i++) {
           filter = _ref[i];
           if (filter.name !== currentState.filters[i].name) {
             render.replaceFilter(i + 1, render.makeFilter(filters[filter.name].code));
+            shouldRebuild = true;
           }
         }
       }
@@ -52,7 +56,9 @@
         }
         render.setParameters(i + 1, numericalParams);
       }
-      interface.buildInterface(newState);
+      if (shouldRebuild) {
+        interface.buildInterface(newState);
+      }
       return currentState = clone(newState);
     },
     get: function() {
@@ -73,6 +79,7 @@
       }
       lastComponent = path[path.length - 1];
       node[lastComponent] = newValue;
+      console.log("has set", root, lastComponent, newValue);
       return state.set(root);
     }
   };
@@ -90,7 +97,7 @@
             lastEdit: 3
           },
           sides: {
-            value: "ascending",
+            value: 0.5,
             lastEdit: 4
           }
         }
