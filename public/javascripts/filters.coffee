@@ -63,7 +63,7 @@ addFilters {
         float a = atan(p.y,p.x);
         float r = sqrt(dot(p,p));
 
-        float amount = sides * 6.0;
+        float amount = (sides * 5.0) + 1.0;
 
         uv.x = amount*a/3.1416;
         uv.y = sin(amount*r+phase*6.2832) + .7*cos(amount*a+phase*6.2832);
@@ -87,7 +87,7 @@ addFilters {
     {
         vec2 p = -0.5 + gl_FragCoord.xy / resolution.xy;
 
-        p = p * 12.0 * amount;
+        p = p * ((12.0 * amount) + 1.0);
 
         vec2 uv;
         uv.x = (p.x + 0.5);
@@ -220,11 +220,11 @@ addFilters {
         uv.x = (p.x + 0.5);
         uv.y = (0.5 - p.y);
         
-        p = p * 100.0 * amount;
+        p = p * ((100.0 * amount) + 1.0);
         
         vec2 uv2;
-        uv2.x = p.x;
-        uv2.y = 1.0 - p.y;
+        uv2.x = (p.x + 0.5);
+        uv2.y = (0.5 - p.y);
 
         vec3 col = texture2D(tex0, uv).xyz;
         vec3 col2 = texture2D(tex0, fract(uv2)).xyz;
