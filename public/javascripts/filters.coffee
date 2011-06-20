@@ -45,14 +45,15 @@ addFilters {
     #ifdef GL_ES
     precision highp float;
     #endif
+    
+    // based on 'Kaleidoscope' by iq (2009)
+    // http://www.iquilezles.org/apps/shadertoy/
 
     uniform vec2 resolution;
     uniform sampler2D tex0;
 
     uniform float sides;
     uniform float phase;
-
-    uniform float neverUsed;
 
     void main(void)
     {
@@ -141,6 +142,94 @@ addFilters {
         vec3 col = texture2D(tex0, fract(uv)).xyz;
 
         gl_FragColor = vec4(col,1.0);
+    }
+    """
+  twist: """
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+    
+    // based on 'Twist' by iq (2009)
+    // http://www.iquilezles.org/apps/shadertoy/
+    
+    uniform vec2 resolution;
+    uniform sampler2D tex0;
+    
+    uniform float phase;
+    uniform float amount;
+    void main(void)
+    {
+        vec2 p = -1.0 + 2.0 * gl_FragCoord.xy / resolution.xy;
+        vec2 uv;
+
+        float a = atan(p.y,p.x);
+        float r = sqrt(dot(p,p));
+
+        uv.x = r - phase;
+        uv.y = cos(0.5*a + 3.0*r*(amount-0.5));
+
+        vec3 col =  texture2D(tex0,fract(uv)).xyz;
+
+        gl_FragColor = vec4(col,1.0);
+    }
+    """
+  tunnel: """
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+    
+    // based on 'Tunnel' by iq (2009)
+    // http://www.iquilezles.org/apps/shadertoy/
+
+    uniform vec2 resolution;
+    uniform sampler2D tex0;
+    
+    uniform float phase;
+
+    void main(void)
+    {
+        vec2 p = -1.0 + 2.0 * gl_FragCoord.xy / resolution.xy;
+        vec2 uv;
+
+        float a = atan(p.y,p.x);
+        float r = sqrt(dot(p,p));
+
+        uv.x = .1/r + phase;
+        uv.y = a/3.1416;
+
+        vec3 col =  texture2D(tex0,fract(uv)).xyz;
+
+        gl_FragColor = vec4(col*r,1.0);
+    }
+    """
+  metatile:   """
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+
+    uniform vec2 resolution;
+    uniform sampler2D tex0;
+
+    uniform float amount;
+
+    void main(void)
+    {
+        vec2 p = -0.5 + gl_FragCoord.xy / resolution.xy;
+
+        vec2 uv;
+        uv.x = (p.x + 0.5);
+        uv.y = (0.5 - p.y);
+        
+        p = p * 100.0 * amount;
+        
+        vec2 uv2;
+        uv2.x = p.x;
+        uv2.y = 1.0 - p.y;
+
+        vec3 col = texture2D(tex0, uv).xyz;
+        vec3 col2 = texture2D(tex0, fract(uv2)).xyz;
+
+        gl_FragColor = vec4(col*amount+col2*(1.0-amount),1.0);
     }
     """
 }
