@@ -7,24 +7,36 @@ state =
     { name: "identity" },
     { name: "identity" }]
 
-exports.initializeClient = (client, io) ->
+exports.initializeClient = (client) ->
   newclient = 
-    id: client.sessionId
-    color: "#FBF"
+    userId: client.sessionId
+    userColor: '#'+(Math.random()*0xFFFFFF<<0).toString(16)
   state.clients.push(newclient)
-  # TODO: generate random color
-  io.sockets.emit('message', state: {clients: [newclient]})
+  client.broadcast('message', {
+    type: "update",
+    statePath: ["clients",],
+    newValue: state.clients})
+  client.send('message', {
+    type: "initialize",
+    userId: newclient.id,
+    userColor: newclient.color})
   console.log("client initialized: " + client.sessionId)
 
-exports.handleClientMessage = (client, message, io) ->
+exports.handleClientMessage = (client, message) ->
+  switch message.type
+    when "update"
+      client.broadcast('message', message)
+    when "ping"
+      client.broadcast('message', message)
   console.log("client sent message: " + message)
-  io.sockets.emit('message', message)
-  client.broadcast(message)
 
-exports.disconnectClient = (client, io) ->
-  for c, id in state.clients
-    if c.id == client.sessionId
-      state.clients.remove(id)
-  # TODO: update all clients with removed client
+exports.disconnectClient = (client) ->
+  for c, index in state.clients
+    if c and c.id == client.sessionId
+      state.clients.pop(index)
+  client.broadcast('message', {
+    type: "update",
+    statePath: ["clients",],
+    newValue: state.clients})
   console.log("client disconnected: " + client.sessionId)
 
