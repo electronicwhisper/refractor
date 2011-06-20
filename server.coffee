@@ -11,7 +11,7 @@ exports.initializeClient = (client) ->
   newclient = 
     id: client.sessionId
     color: "#FBF"
-  state.clients.append(newclient)
+  state.clients.push(newclient)
   # TODO: generate random color
   io.sockets.emit('message', state: {clients: [newclient]})
   console.log("client initialized: " + client.sessionId)

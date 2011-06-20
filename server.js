@@ -19,7 +19,7 @@
       id: client.sessionId,
       color: "#FBF"
     };
-    state.clients.append(newclient);
+    state.clients.push(newclient);
     io.sockets.emit('message', {
       state: {
         clients: [newclient]
