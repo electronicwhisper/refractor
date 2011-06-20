@@ -56,7 +56,6 @@ window.state = {
       node = node[component]
     lastComponent = path[path.length - 1]
     node[lastComponent] = newValue
-    console.log("has set", root, lastComponent, newValue)
     state.set(root)
 }
 

@@ -1,9 +1,10 @@
 (function() {
-  var buildRangeCallback, changeFilter, changeParameterValue, changeTexture, connect, filterDefinitionIds, filterSelectIds, filters, initializeUI, processData, socket;
+  var animationModes, buildButtonCallback, buildRangeCallback, changeFilter, changeParameterValue, changeTexture, connect, filterDefinitionIds, filterSelectIds, filters, initializeUI, processData, socket;
   socket = null;
   filters = {};
   filterDefinitionIds = ["first-plug", "second-plug", "third-plug"];
   filterSelectIds = ["first-filter-select", "second-filter-select", "third-filter-select"];
+  animationModes = [["ascending", "&rarr;"], ["descending", "&larr;"], ["oscillating", "&harr;"]];
   processData = function(data) {
     switch (data.type) {
       case "ping":
@@ -107,16 +108,35 @@
     state.set(state.sampleState);
     return time.start();
   });
-  buildRangeCallback = function(filterIndex, propertyName) {
+  buildRangeCallback = function(filterIndex, parameterName) {
     return function(e) {
-      var value;
-      value = parseInt(e.srcElement.value, 10) / 100;
-      return changeParameterValue(filterIndex, propertyName, value);
+      var element, value;
+      element = $(e.srcElement).removeAttr('disabled');
+      value = parseInt(element.val(), 10) / 100;
+      changeParameterValue(filterIndex, parameterName, value);
+      return element.parent().find('.modeButton').removeClass('selected');
+    };
+  };
+  buildButtonCallback = function(filterIndex, parameterName, animationMode, range) {
+    return function(e) {
+      changeParameterValue(filterIndex, parameterName, animationMode);
+      $(e.srcElement).toggleClass('selected');
+      $(e.srcElement).siblings().removeClass('selected');
+      if ($(e.srcElement).hasClass('selected')) {
+        return range.attr('disabled', 'disabled');
+      } else {
+        return range.removeAttr('disabled');
+      }
     };
   };
   window.interface = {
+    updateSlider: function(filterIndex, parameterName, newValue) {
+      var rangeId;
+      rangeId = ['filter', filterIndex, parameterName, 'range'].join('-');
+      return document.getElementById(rangeId).value = newValue * 100;
+    },
     buildInterface: function(state) {
-      var bundle, definition, filter, filterIndex, name, range, selectElement, _len, _ref, _results;
+      var bundle, definition, div, filter, filterIndex, mode, modeLink, modeName, modeSymbol, parameterName, range, selectElement, _len, _ref, _results;
       $('#texture-input input').val(state.initialTexture);
       $('#input-box img').attr('src', state.initialTexture);
       _ref = state.filters;
@@ -128,14 +148,30 @@
         definition = $(document.getElementById(filterDefinitionIds[filterIndex]));
         definition.empty();
         _results.push((function() {
-          var _ref2, _results2;
+          var _i, _len2, _ref2, _results2;
           _ref2 = filter.parameters;
           _results2 = [];
-          for (name in _ref2) {
-            bundle = _ref2[name];
-            console.log(name, bundle.value);
-            range = $('<input type="range" min="0" max="100" step="1">').change(buildRangeCallback(filterIndex, name)).val(bundle.value * 100);
-            _results2.push(definition.append($("<div>").append($('<span>').text(name), range)));
+          for (parameterName in _ref2) {
+            bundle = _ref2[parameterName];
+            div = $("<div>");
+            range = $('<input type="range" min="0" max="100" step="1">').attr('id', ['filter', filterIndex, parameterName, 'range'].join('-')).change(buildRangeCallback(filterIndex, parameterName));
+            if (typeof bundle.value === 'number') {
+              range.val(bundle.value * 100);
+            } else {
+              range.attr('disabled', 'disabled');
+            }
+            div.append($('<span>').text(parameterName), range, $('<br>'));
+            for (_i = 0, _len2 = animationModes.length; _i < _len2; _i++) {
+              mode = animationModes[_i];
+              modeName = mode[0];
+              modeSymbol = mode[1];
+              modeLink = $('<a>').html(modeSymbol).click(buildButtonCallback(filterIndex, parameterName, modeName, range)).addClass('modeButton');
+              if (bundle.value === modeName) {
+                modeLink.addClass('selected');
+              }
+              div.append(modeLink);
+            }
+            _results2.push(definition.append(div));
           }
           return _results2;
         })());

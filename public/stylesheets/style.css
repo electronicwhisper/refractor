@@ -77,8 +77,11 @@ canvas {
 
 #input-box { margin-left: 35px; }
 
-#ping {
-    position: absolute;
-    right: 0px;
-    bottom: 0px;
+.modeButton {
+    font-size: 16px;
+    margin-right: 7px;
+}
+
+.modeButton.selected {
+    background-color: yellow;
 }

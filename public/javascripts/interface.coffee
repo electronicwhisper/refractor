@@ -3,6 +3,7 @@ filters = {}
 
 filterDefinitionIds = ["first-plug", "second-plug", "third-plug"]
 filterSelectIds     = ["first-filter-select", "second-filter-select", "third-filter-select"]
+animationModes      = [["ascending", "&rarr;"], ["descending", "&larr;"], ["oscillating", "&harr;"]]
 
 processData = (data) ->
   switch(data.type)
@@ -60,13 +61,29 @@ $(document).ready ->
   state.set(state.sampleState)
   time.start()
 
-buildRangeCallback = (filterIndex, propertyName) ->
+buildRangeCallback = (filterIndex, parameterName) ->
   (e) ->
-    value = parseInt(e.srcElement.value, 10) / 100
-    changeParameterValue(filterIndex, propertyName, value)
+    element = $(e.srcElement).removeAttr('disabled')
+    value = parseInt(element.val(), 10) / 100
+    changeParameterValue(filterIndex, parameterName, value)
+    element.parent().find('.modeButton').removeClass('selected')
+
+buildButtonCallback = (filterIndex, parameterName, animationMode, range) ->
+  (e) ->
+    changeParameterValue(filterIndex, parameterName, animationMode)
+    $(e.srcElement).toggleClass('selected')
+    $(e.srcElement).siblings().removeClass('selected')
+    if ($(e.srcElement).hasClass('selected'))
+      range.attr('disabled', 'disabled');
+    else
+      range.removeAttr('disabled');
 
 
 window.interface = {
+
+  updateSlider: (filterIndex, parameterName, newValue) ->
+    rangeId = ['filter', filterIndex, parameterName, 'range'].join('-')
+    document.getElementById(rangeId).value = newValue * 100
 
   buildInterface: (state) ->
     $('#texture-input input').val(state.initialTexture)
@@ -77,11 +94,26 @@ window.interface = {
       definition = $(document.getElementById(filterDefinitionIds[filterIndex]))
       definition.empty()
 
-      for name, bundle of filter.parameters
-        console.log(name, bundle.value)
+      for parameterName, bundle of filter.parameters
+        div = $("<div>")
         range = $('<input type="range" min="0" max="100" step="1">')
-          .change(buildRangeCallback(filterIndex, name))
-          .val(bundle.value * 100)
-        definition.append($("<div>").append($('<span>').text(name), range))
+          .attr('id', ['filter', filterIndex, parameterName, 'range'].join('-'))
+          .change(buildRangeCallback(filterIndex, parameterName))
+        if (typeof bundle.value == 'number')
+          range.val(bundle.value * 100)
+        else
+          range.attr('disabled', 'disabled')
 
+        div.append($('<span>').text(parameterName), range, $('<br>'))
+        for mode in animationModes
+          modeName = mode[0]
+          modeSymbol = mode[1]
+          modeLink = $('<a>')
+            .html(modeSymbol)
+            .click(buildButtonCallback(filterIndex, parameterName, modeName, range))
+            .addClass('modeButton')
+          if (bundle.value == modeName)
+            modeLink.addClass('selected')
+          div.append(modeLink)
+        definition.append(div)
 }
