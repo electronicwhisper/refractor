@@ -1,19 +1,16 @@
 (function() {
-  var changeFilter, changeTexture, connect, filterIds, filters, handleInitialize, initializeUI, loadFilters, processData, socket;
+  var changeFilter, changeTexture, connect, filterIds, filters, initializeUI, processData, socket;
   socket = null;
   filters = {};
   filterIds = ["first-filter-select", "second-filter-select", "third-filter-select"];
-  handleInitialize = function(userId, userColor, newState) {
-    return state.set(newState);
-  };
   processData = function(data) {
     switch (data.type) {
       case "ping":
         return alert(data.payload);
       case "initialize":
-        return handleInitialize(data.userId, data.userColor, data.state);
-      case "stateChange":
-        return handleStateChange(data.newState);
+        return state.set(data.state);
+      case "update":
+        return state.applyDiff(data.statePath, data.newValue);
       default:
         return console.log("Unknown message type: " + data.type);
     }
@@ -28,32 +25,42 @@
     });
     return socket.connect();
   };
-  loadFilters = function(filters) {
-    var k, v, _ref, _results;
-    _ref = window.filters;
-    _results = [];
-    for (k in _ref) {
-      v = _ref[k];
-      _results.push($('.filter-select').append($('<option>').text(k).val(k)));
-    }
-    return _results;
-  };
   changeTexture = function(newTexture) {
     var path, payload;
     path = ['initialTexture'];
     payload = newTexture;
-    return state.applyDiff(path, payload);
+    state.applyDiff(path, payload);
+    return socket.send({
+      type: "update",
+      statePath: path,
+      newValue: payload
+    });
   };
   changeFilter = function(filterIndex, filterKey) {
-    var path, payload;
+    var k, params, path, payload, v, _ref;
     path = ['filters', filterIndex];
+    params = {};
+    _ref = window.filters[filterKey].defaults;
+    for (k in _ref) {
+      v = _ref[k];
+      console.log("setting", filterKey, k, v);
+      params[k] = {
+        value: v
+      };
+    }
     payload = {
       name: filterKey,
-      parameters: {}
+      parameters: params
     };
-    return state.applyDiff(path, payload);
+    state.applyDiff(path, payload);
+    return socket.send({
+      type: "update",
+      statePath: path,
+      newValue: payload
+    });
   };
   initializeUI = function() {
+    var k, v, _ref;
     $('button').click(function(e) {
       var msg;
       msg = {
@@ -73,7 +80,11 @@
       newTexture = e.srcElement.value;
       return changeTexture(newTexture);
     });
-    loadFilters(window.filters);
+    _ref = window.filters;
+    for (k in _ref) {
+      v = _ref[k];
+      $('.filter-select').append($('<option>').text(k).val(k));
+    }
     return render.setResolution(window.innerWidth, window.innerHeight);
   };
   $(document).ready(function() {
