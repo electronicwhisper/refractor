@@ -111,7 +111,7 @@
   buildRangeCallback = function(filterIndex, parameterName) {
     return function(e) {
       var element, value;
-      element = $(e.srcElement).removeAttr('disabled');
+      element = $(e.srcElement);
       value = parseInt(element.val(), 10) / 100;
       changeParameterValue(filterIndex, parameterName, value);
       return element.parent().find('.modeButton').removeClass('selected');
@@ -123,10 +123,7 @@
       changeParameterValue(filterIndex, parameterName, animationMode);
       $(e.srcElement).toggleClass('selected');
       $(e.srcElement).siblings().removeClass('selected');
-      if ($(e.srcElement).hasClass('selected')) {
-        return range.attr('disabled', 'disabled');
-      } else {
-        range.removeAttr('disabled');
+      if (!$(e.srcElement).hasClass('selected')) {
         value = range.val() / 100.0;
         return changeParameterValue(filterIndex, parameterName, value);
       }
@@ -160,8 +157,6 @@
             range = $('<input type="range" min="0" max="100" step="1">').attr('id', ['filter', filterIndex, parameterName, 'range'].join('-')).change(buildRangeCallback(filterIndex, parameterName));
             if (typeof bundle.value === 'number') {
               range.val(bundle.value * 100);
-            } else {
-              range.attr('disabled', 'disabled');
             }
             div.append($('<span>').text(parameterName), range, $('<br>'));
             for (_i = 0, _len2 = animationModes.length; _i < _len2; _i++) {

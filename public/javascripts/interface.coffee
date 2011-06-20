@@ -63,7 +63,7 @@ $(document).ready ->
 
 buildRangeCallback = (filterIndex, parameterName) ->
   (e) ->
-    element = $(e.srcElement).removeAttr('disabled')
+    element = $(e.srcElement)
     value = parseInt(element.val(), 10) / 100
     changeParameterValue(filterIndex, parameterName, value)
     element.parent().find('.modeButton').removeClass('selected')
@@ -73,10 +73,7 @@ buildButtonCallback = (filterIndex, parameterName, animationMode, range) ->
     changeParameterValue(filterIndex, parameterName, animationMode)
     $(e.srcElement).toggleClass('selected')
     $(e.srcElement).siblings().removeClass('selected')
-    if ($(e.srcElement).hasClass('selected'))
-      range.attr('disabled', 'disabled');
-    else
-      range.removeAttr('disabled');
+    if (!$(e.srcElement).hasClass('selected'))
       value = range.val() / 100.0
       changeParameterValue(filterIndex, parameterName, value)
 
@@ -103,8 +100,6 @@ window.interface = {
           .change(buildRangeCallback(filterIndex, parameterName))
         if (typeof bundle.value == 'number')
           range.val(bundle.value * 100)
-        else
-          range.attr('disabled', 'disabled')
 
         div.append($('<span>').text(parameterName), range, $('<br>'))
         for mode in animationModes
