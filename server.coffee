@@ -7,7 +7,7 @@ state =
     { name: "identity" },
     { name: "identity" }]
 
-exports.initializeClient = (client) ->
+exports.initializeClient = (client, io) ->
   newclient = 
     id: client.sessionId
     color: "#FBF"
@@ -16,12 +16,12 @@ exports.initializeClient = (client) ->
   io.sockets.emit('message', state: {clients: [newclient]})
   console.log("client initialized: " + client.sessionId)
 
-exports.handleClientMessage = (client, message) ->
+exports.handleClientMessage = (client, message, io) ->
   console.log("client sent message: " + message)
   io.sockets.emit('message', message)
   client.broadcast(message)
 
-exports.disconnectClient = (client) ->
+exports.disconnectClient = (client, io) ->
   for c, id in state.clients
     if c.id == client.sessionId
       state.clients.remove(id)

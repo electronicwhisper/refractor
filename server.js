@@ -13,7 +13,7 @@
       }
     ]
   };
-  exports.initializeClient = function(client) {
+  exports.initializeClient = function(client, io) {
     var newclient;
     newclient = {
       id: client.sessionId,
@@ -27,12 +27,12 @@
     });
     return console.log("client initialized: " + client.sessionId);
   };
-  exports.handleClientMessage = function(client, message) {
+  exports.handleClientMessage = function(client, message, io) {
     console.log("client sent message: " + message);
     io.sockets.emit('message', message);
     return client.broadcast(message);
   };
-  exports.disconnectClient = function(client) {
+  exports.disconnectClient = function(client, io) {
     var c, id, _len, _ref;
     _ref = state.clients;
     for (id = 0, _len = _ref.length; id < _len; id++) {
