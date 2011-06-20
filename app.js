@@ -39,12 +39,12 @@ app.get('/', function(req, res){
 var io = sio.listen(app);
 
 io.on('connection', function (client) {
-    server.initializeClient(client);
+    server.initializeClient(client, io);
 
     client.on('message', function (message) {
-        server.handleClientMessage(client, message);
+        server.handleClientMessage(client, message, io);
     });
-    client.on('disconnect', function() { server.disconnectClient(client); });
+    client.on('disconnect', function() { server.disconnectClient(client, io); });
 });
 
 
