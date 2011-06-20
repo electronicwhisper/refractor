@@ -119,13 +119,16 @@
   };
   buildButtonCallback = function(filterIndex, parameterName, animationMode, range) {
     return function(e) {
+      var value;
       changeParameterValue(filterIndex, parameterName, animationMode);
       $(e.srcElement).toggleClass('selected');
       $(e.srcElement).siblings().removeClass('selected');
       if ($(e.srcElement).hasClass('selected')) {
         return range.attr('disabled', 'disabled');
       } else {
-        return range.removeAttr('disabled');
+        range.removeAttr('disabled');
+        value = range.val() / 100.0;
+        return changeParameterValue(filterIndex, parameterName, value);
       }
     };
   };

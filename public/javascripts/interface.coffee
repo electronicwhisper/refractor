@@ -77,6 +77,8 @@ buildButtonCallback = (filterIndex, parameterName, animationMode, range) ->
       range.attr('disabled', 'disabled');
     else
       range.removeAttr('disabled');
+      value = range.val() / 100.0
+      changeParameterValue(filterIndex, parameterName, value)
 
 
 window.interface = {
