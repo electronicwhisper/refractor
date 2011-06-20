@@ -16,7 +16,7 @@ time = window.time = {
           else if v.value == "descending"
             toSet[k] = (frames - t) / frames
           else if v.value == "oscillating"
-            toSet[k] = Math.sin(6.2832 * t / frames)
+            toSet[k] = Math.sin(6.2832 * t / frames) * 0.5 + 0.5
       render.setParameters(i+1, toSet)
     
     render.render()
