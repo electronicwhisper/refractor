@@ -65,7 +65,6 @@
       _ref = path.slice(0, path.length - 1);
       for (i = 0, _len = _ref.length; i < _len; i++) {
         component = _ref[i];
-        console.log(component, i, node);
         if (!node.hasOwnProperty(component)) {
           console.error("Invalid path component for state node", component, node);
           return;

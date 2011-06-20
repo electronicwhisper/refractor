@@ -11,7 +11,6 @@ clone = (obj) ->
   return newInstance
 
 
-
 window.state = {
   set: (newState) ->
     # ===================================
@@ -45,7 +44,6 @@ window.state = {
     root = clone(currentState)
     node = root
     for component, i in path[0...path.length - 1]
-      console.log(component, i, node)
       if (!node.hasOwnProperty(component))
         console.error("Invalid path component for state node", component, node)
         return
