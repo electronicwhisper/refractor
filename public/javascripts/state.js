@@ -2,42 +2,6 @@
   var clone, currentState;
   var __slice = Array.prototype.slice;
   currentState = null;
-  /*
-  sample state:
-  
-  {
-    initialTexture: "images/textures/sample.png",
-    filters: [
-      {
-        name: "identity",
-        parameters: {}
-      },
-      {
-        name: "kaleido",
-        parameters: {
-          phase: {
-            value: 0.5,
-            lastEdit: 3
-          },
-          sides: {
-            value: "ascending",
-            lastEdit: 4
-          }
-        }
-      },
-      {
-        name: "tile",
-        parameters: {
-          amount: {
-            value: "oscillating",
-            lastEdit: 1
-          }
-        }
-      }
-    ]
-  }
-  
-  */
   clone = function(obj) {
     var key, newInstance;
     if (!(obj != null) || typeof obj !== 'object') {
@@ -88,10 +52,58 @@
         }
         render.setParameters(i + 1, numericalParams);
       }
+      interface.buildInterface(newState);
       return currentState = clone(newState);
     },
     get: function() {
       return currentState;
+    },
+    applyDiff: function(path, newValue) {
+      var component, i, lastComponent, node, root, _len, _ref;
+      root = clone(currentState);
+      node = root;
+      _ref = path.slice(0, path.length - 1);
+      for (i = 0, _len = _ref.length; i < _len; i++) {
+        component = _ref[i];
+        console.log(component, i, node);
+        if (!node.hasOwnProperty(component)) {
+          console.error("Invalid path component for state node", component, node);
+          return;
+        }
+        node = node[component];
+      }
+      lastComponent = path[path.length - 1];
+      node[lastComponent] = newValue;
+      return state.set(root);
     }
+  };
+  window.state.sampleState = {
+    initialTexture: "images/textures/sample.png",
+    filters: [
+      {
+        name: "identity",
+        parameters: {}
+      }, {
+        name: "kaleido",
+        parameters: {
+          phase: {
+            value: 0.5,
+            lastEdit: 3
+          },
+          sides: {
+            value: "ascending",
+            lastEdit: 4
+          }
+        }
+      }, {
+        name: "tile",
+        parameters: {
+          amount: {
+            value: "oscillating",
+            lastEdit: 1
+          }
+        }
+      }
+    ]
   };
 }).call(this);
