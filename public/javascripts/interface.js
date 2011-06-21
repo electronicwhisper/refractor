@@ -7,14 +7,13 @@
   animationModes = [["ascending", "&rarr;"], ["descending", "&larr;"], ["oscillating", "&harr;"]];
   processData = function(data) {
     switch (data.type) {
-      case "ping":
-        return alert(data.payload);
       case "initialize":
-        return state.set(data.state);
+        state.set(data.state);
+        return time.start();
       case "update":
         return state.applyDiff(data.statePath, data.newValue);
       default:
-        return console.log("Unknown message type: " + data.type);
+        return console.warn("Unknown message type: " + data.type);
     }
   };
   connect = function() {
@@ -23,7 +22,7 @@
       return console.log("Connected!");
     });
     socket.on('message', function(data) {
-      return processData(JSON.parse(data));
+      return processData(data);
     });
     return socket.connect();
   };
@@ -104,9 +103,7 @@
   $(document).ready(function() {
     $('body').prepend(render.init());
     connect();
-    initializeUI();
-    state.set(state.sampleState);
-    return time.start();
+    return initializeUI();
   });
   buildRangeCallback = function(filterIndex, parameterName) {
     return function(e) {

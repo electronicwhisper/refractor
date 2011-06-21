@@ -5,11 +5,25 @@
     initialTexture: "images/textures/sample.png",
     filters: [
       {
-        name: "identity"
+        name: "identity",
+        parameters: {}
       }, {
-        name: "identity"
+        name: "kaleido",
+        parameters: {
+          phase: {
+            value: 0.5
+          },
+          sides: {
+            value: 0.5
+          }
+        }
       }, {
-        name: "identity"
+        name: "tile",
+        parameters: {
+          amount: {
+            value: "oscillating"
+          }
+        }
       }
     ]
   };
@@ -20,27 +34,24 @@
       userColor: '#' + (Math.random() * 0xFFFFFF << 0).toString(16)
     };
     state.clients.push(newclient);
-    client.broadcast('message', {
+    client.broadcast({
       type: "update",
       statePath: ["clients"],
       newValue: state.clients
     });
-    client.send('message', {
+    return client.send({
       type: "initialize",
       userId: newclient.id,
-      userColor: newclient.color
+      userColor: newclient.color,
+      state: state
     });
-    return console.log("client initialized: " + client.sessionId);
   };
   exports.handleClientMessage = function(client, message) {
+    console.log("client sent message: " + JSON.stringify(message));
     switch (message.type) {
       case "update":
-        client.broadcast('message', message);
-        break;
-      case "ping":
-        client.broadcast('message', message);
+        return client.broadcast(message);
     }
-    return console.log("client sent message: " + message);
   };
   exports.disconnectClient = function(client) {
     var c, index, _len, _ref;
@@ -51,11 +62,10 @@
         state.clients.pop(index);
       }
     }
-    client.broadcast('message', {
+    return client.broadcast({
       type: "update",
       statePath: ["clients"],
       newValue: state.clients
     });
-    return console.log("client disconnected: " + client.sessionId);
   };
 }).call(this);

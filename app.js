@@ -42,9 +42,9 @@ io.on('connection', function (client) {
     server.initializeClient(client, io);
 
     client.on('message', function (message) {
-        server.handleClientMessage(client, message, io);
+        server.handleClientMessage(client, message);
     });
-    client.on('disconnect', function() { server.disconnectClient(client, io); });
+    client.on('disconnect', function() { server.disconnectClient(client); });
 });
 
 

@@ -16,6 +16,7 @@
   window.state = {
     set: function(newState) {
       var filter, i, k, numericalParams, shouldRebuild, v, _len, _len2, _ref, _ref2, _ref3;
+      console.log("setting new state", newState);
       shouldRebuild = false;
       if (!currentState) {
         render.setPipeline.apply(render, [newState.initialTexture].concat(__slice.call((function() {

@@ -7,15 +7,14 @@ animationModes      = [["ascending", "&rarr;"], ["descending", "&larr;"], ["osci
 
 processData = (data) ->
   switch(data.type)
-    when "ping"       then alert(data.payload)
-    when "initialize" then state.set(data.state)
+    when "initialize" then state.set(data.state); time.start()
     when "update"     then state.applyDiff(data.statePath, data.newValue)
-    else console.log("Unknown message type: " + data.type)
+    else console.warn("Unknown message type: " + data.type)
 
 connect = () ->
   socket = new io.Socket()
   socket.on('connect', () -> console.log("Connected!"))
-  socket.on('message', (data) -> processData(JSON.parse(data)))
+  socket.on('message', (data) -> processData(data))
   socket.connect()
 
 changeTexture = (newTexture) ->
@@ -58,8 +57,6 @@ $(document).ready ->
   $('body').prepend(render.init())
   connect()
   initializeUI()
-  state.set(state.sampleState)
-  time.start()
 
 buildRangeCallback = (filterIndex, parameterName) ->
   (e) ->
