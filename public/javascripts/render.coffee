@@ -12,7 +12,7 @@ GLOW.TextureCanvas.prototype.init = (textureUnit) ->
   this.texture = GL.createTexture()
   
   GL.bindTexture( GL.TEXTURE_2D, this.texture )
-  GL.texImage2D( GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, canvas )
+  GL.texImage2D( GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, this.canvas )
   
   GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT )
   GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT )
@@ -21,6 +21,8 @@ GLOW.TextureCanvas.prototype.init = (textureUnit) ->
   GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_LINEAR )
   
   GL.generateMipmap( GL.TEXTURE_2D )
+  
+  GL.bindTexture( GL.TEXTURE_2D, null );
 
 
 
@@ -53,9 +55,6 @@ resolutionHeight = 512
 # GLOW.Texture
 initialTexture = null
 
-# cache textures by url
-textureCache = {}
-
 # 2d canvas (to resize images)
 canvas2D = null
 canvas2DContext = null
@@ -79,9 +78,11 @@ render = window.render = {
     fbo2 = new GLOW.FBO()
     
     canvas2D = document.createElement("canvas")
-    $(canvas2D).attr("width", 1024).attr("height", 768).css("display", "none")
+    $(canvas2D).attr("width", 1024).attr("height", 1024).css("display", "none")
     $("body").append(canvas2D)
     canvas2DContext = canvas2D.getContext("2d")
+    
+    initialTexture = new GLOW.TextureCanvas(canvas2D)
     
     context.domElement
   
@@ -92,11 +93,7 @@ render = window.render = {
     f1, f2, and f3 should be objects created by render.makeFilter
   ###
   setPipeline: (initialTextureURL, f1, f2, f3) ->
-    # create GLOW.Texture and cache it if it doesn't exist
-    if !textureCache[initialTextureURL]
-      textureCache[initialTextureURL] = new GLOW.Texture(initialTextureURL)
-    
-    initialTexture = textureCache[initialTextureURL]
+    render.replaceInitialTexture(initialTextureURL)
     
     filterInfo1 = f1
     filterInfo2 = f2
@@ -148,15 +145,17 @@ render = window.render = {
   TODO
   ###
   replaceInitialTexture: (url) ->
-    if !textureCache[url]
-      textureCache[url] = new GLOW.Texture(url)
-    initialTexture = url
-    
-    # we need to remake filter1 (because I can't figure out how to replace a texture on a GLOW.Shader)
-    params = render.getParameters(1)
-    filterInfo1.data.tex0 = initialTexture
-    filter1 = new GLOW.Shader(filterInfo1)
-    render.setParameters(1, params)
+    img = new Image()
+    img.onload = () ->
+      canvas2DContext.drawImage(img,0,0,1024,1024)
+      initialTexture.init()
+      
+      # we need to remake filter1 (for some strange reason)
+      params = render.getParameters(1)
+      filterInfo1.data.tex0 = initialTexture
+      filter1 = new GLOW.Shader(filterInfo1)
+      render.setParameters(1, params)
+    img.src = url
   
   ###
   Given a filter number (1, 2, or 3), returns an object whose keys are parameter names and values are the current values

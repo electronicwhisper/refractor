@@ -1,7 +1,7 @@
 (function() {
   /*
   Some extensions to GLOW
-  */  var canvas2D, canvas2DContext, context, fbo1, fbo2, filter1, filter2, filter3, filterInfo1, filterInfo2, filterInfo3, initialTexture, render, resolutionHeight, resolutionWidth, textureCache;
+  */  var canvas2D, canvas2DContext, context, fbo1, fbo2, filter1, filter2, filter3, filterInfo1, filterInfo2, filterInfo3, initialTexture, render, resolutionHeight, resolutionWidth;
   var __hasProp = Object.prototype.hasOwnProperty;
   GLOW.TextureCanvas = function(canvas) {
     this.id = GLOW.uniqueId();
@@ -14,12 +14,13 @@
     this.textureUnit = textureUnit;
     this.texture = GL.createTexture();
     GL.bindTexture(GL.TEXTURE_2D, this.texture);
-    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, canvas);
+    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, this.canvas);
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT);
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT);
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_LINEAR);
-    return GL.generateMipmap(GL.TEXTURE_2D);
+    GL.generateMipmap(GL.TEXTURE_2D);
+    return GL.bindTexture(GL.TEXTURE_2D, null);
   };
   context = null;
   filterInfo1 = null;
@@ -33,7 +34,6 @@
   resolutionWidth = 512;
   resolutionHeight = 512;
   initialTexture = null;
-  textureCache = {};
   canvas2D = null;
   canvas2DContext = null;
   render = window.render = {
@@ -51,9 +51,10 @@
       fbo1 = new GLOW.FBO();
       fbo2 = new GLOW.FBO();
       canvas2D = document.createElement("canvas");
-      $(canvas2D).attr("width", 1024).attr("height", 768).css("display", "none");
+      $(canvas2D).attr("width", 1024).attr("height", 1024).css("display", "none");
       $("body").append(canvas2D);
       canvas2DContext = canvas2D.getContext("2d");
+      initialTexture = new GLOW.TextureCanvas(canvas2D);
       return context.domElement;
     },
     /*
@@ -63,10 +64,7 @@
         f1, f2, and f3 should be objects created by render.makeFilter
       */
     setPipeline: function(initialTextureURL, f1, f2, f3) {
-      if (!textureCache[initialTextureURL]) {
-        textureCache[initialTextureURL] = new GLOW.Texture(initialTextureURL);
-      }
-      initialTexture = textureCache[initialTextureURL];
+      render.replaceInitialTexture(initialTextureURL);
       filterInfo1 = f1;
       filterInfo2 = f2;
       filterInfo3 = f3;
@@ -117,15 +115,18 @@
       TODO
       */
     replaceInitialTexture: function(url) {
-      var params;
-      if (!textureCache[url]) {
-        textureCache[url] = new GLOW.Texture(url);
-      }
-      initialTexture = url;
-      params = render.getParameters(1);
-      filterInfo1.data.tex0 = initialTexture;
-      filter1 = new GLOW.Shader(filterInfo1);
-      return render.setParameters(1, params);
+      var img;
+      img = new Image();
+      img.onload = function() {
+        var params;
+        canvas2DContext.drawImage(img, 0, 0, 1024, 1024);
+        initialTexture.init();
+        params = render.getParameters(1);
+        filterInfo1.data.tex0 = initialTexture;
+        filter1 = new GLOW.Shader(filterInfo1);
+        return render.setParameters(1, params);
+      };
+      return img.src = url;
     },
     /*
       Given a filter number (1, 2, or 3), returns an object whose keys are parameter names and values are the current values
