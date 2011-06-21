@@ -1,6 +1,26 @@
 (function() {
-  var context, fbo1, fbo2, filter1, filter2, filter3, filterInfo1, filterInfo2, filterInfo3, initialTexture, render, resolutionHeight, resolutionWidth, textureCache;
+  /*
+  Some extensions to GLOW
+  */  var canvas2D, canvas2DContext, context, fbo1, fbo2, filter1, filter2, filter3, filterInfo1, filterInfo2, filterInfo3, initialTexture, render, resolutionHeight, resolutionWidth, textureCache;
   var __hasProp = Object.prototype.hasOwnProperty;
+  GLOW.TextureCanvas = function(canvas) {
+    this.id = GLOW.uniqueId();
+    this.textureUnit = -1;
+    this.texture = void 0;
+    this.canvas = canvas;
+    return this;
+  };
+  GLOW.TextureCanvas.prototype.init = function(textureUnit) {
+    this.textureUnit = textureUnit;
+    this.texture = GL.createTexture();
+    GL.bindTexture(GL.TEXTURE_2D, this.texture);
+    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, canvas);
+    GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT);
+    GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT);
+    GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+    GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_LINEAR);
+    return GL.generateMipmap(GL.TEXTURE_2D);
+  };
   context = null;
   filterInfo1 = null;
   filterInfo2 = null;
@@ -14,6 +34,8 @@
   resolutionHeight = 512;
   initialTexture = null;
   textureCache = {};
+  canvas2D = null;
+  canvas2DContext = null;
   render = window.render = {
     /*
       ==========================================================
@@ -28,6 +50,10 @@
       context = new GLOW.Context();
       fbo1 = new GLOW.FBO();
       fbo2 = new GLOW.FBO();
+      canvas2D = document.createElement("canvas");
+      $(canvas2D).attr("width", 1024).attr("height", 768).css("display", "none");
+      $("body").append(canvas2D);
+      canvas2DContext = canvas2D.getContext("2d");
       return context.domElement;
     },
     /*

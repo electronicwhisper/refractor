@@ -1,3 +1,58 @@
+GLOW.TextureCanvas = (canvas) ->
+  this.id = GLOW.uniqueId();
+  this.textureUnit = -1;
+  this.texture = undefined;
+  this.canvas = canvas
+  console.log("initialized")
+  return this
+
+
+
+GLOW.TextureCanvas.prototype.init = (textureUnit) ->
+  console.log("got here")
+  
+  this.textureUnit = textureUnit
+  this.texture = GL.createTexture()
+  
+  GL.bindTexture( GL.TEXTURE_2D, this.texture )
+  GL.texImage2D( GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, canvas )
+  
+  GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT )
+  GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT )
+  
+  GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR )
+  GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_LINEAR )
+  
+  GL.generateMipmap( GL.TEXTURE_2D )
+  
+  
+
+
+
+canvas = document.getElementById("canvas")
+ctx = canvas.getContext("2d")
+
+ctx.fillStyle = "rgb(200,0,0)"
+ctx.fillRect(10, 10, 55, 50)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 make2dShader = (data, fragmentShaderCode) ->
   shaderInfo = {
     data: data
@@ -32,6 +87,8 @@ window.context = context
 
 FBO = new GLOW.FBO()
 
+
+myTex = new GLOW.TextureCanvas(canvas)
 
 
 
@@ -74,8 +131,9 @@ kaleido = make2dShader(
   {
     resolution: new GLOW.Vector2(window.innerWidth, window.innerHeight)
     # tex0: new GLOW.Texture( "clouds.jpg" )
-    tex0: new GLOW.Texture("http://a0.twimg.com/profile_images/393262736/n636211541_7004_reasonably_small.jpg")
+    # tex0: new GLOW.Texture("http://a0.twimg.com/profile_images/393262736/n636211541_7004_reasonably_small.jpg")
     # tex0: FBO
+    tex0: myTex
     time: new GLOW.Float()
     
 
@@ -129,3 +187,14 @@ render = () ->
 
 
 setInterval(render, 1000 / 30);
+
+ctx.fillStyle = "rgba(0, 0, 200, 0.5)"
+ctx.fillRect(30, 30, 55, 50)
+
+img = new Image()
+img.onload = () ->
+  ctx.drawImage(img,0,0,1024,1024)
+  myTex.init()
+img.src = 'http://b.vimeocdn.com/ts/138/161/138161069_200.jpg'
+
+myTex.init()

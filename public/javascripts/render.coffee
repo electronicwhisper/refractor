@@ -1,3 +1,35 @@
+###
+Some extensions to GLOW
+###
+GLOW.TextureCanvas = (canvas) ->
+  this.id = GLOW.uniqueId();
+  this.textureUnit = -1;
+  this.texture = undefined;
+  this.canvas = canvas
+  this
+GLOW.TextureCanvas.prototype.init = (textureUnit) ->
+  this.textureUnit = textureUnit
+  this.texture = GL.createTexture()
+  
+  GL.bindTexture( GL.TEXTURE_2D, this.texture )
+  GL.texImage2D( GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, canvas )
+  
+  GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT )
+  GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT )
+  
+  GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR )
+  GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_LINEAR )
+  
+  GL.generateMipmap( GL.TEXTURE_2D )
+
+
+
+
+
+
+
+
+
 # the GLOW.Context
 context = null
 
@@ -24,6 +56,10 @@ initialTexture = null
 # cache textures by url
 textureCache = {}
 
+# 2d canvas (to resize images)
+canvas2D = null
+canvas2DContext = null
+
 
 render = window.render = {
   
@@ -41,6 +77,12 @@ render = window.render = {
     context = new GLOW.Context()
     fbo1 = new GLOW.FBO()
     fbo2 = new GLOW.FBO()
+    
+    canvas2D = document.createElement("canvas")
+    $(canvas2D).attr("width", 1024).attr("height", 768).css("display", "none")
+    $("body").append(canvas2D)
+    canvas2DContext = canvas2D.getContext("2d")
+    
     context.domElement
   
   ###
