@@ -1,5 +1,5 @@
 (function() {
-  var applyDiff, state;
+  var applyDiff, applyUpdateMessage, state;
   state = {
     clients: [],
     initialTexture: "images/textures/sample.png",
@@ -42,18 +42,23 @@
     lastComponent = path[path.length - 1];
     return node[lastComponent] = newValue;
   };
+  applyUpdateMessage = function(message) {
+    return applyDiff(message.statePath, message.newValue);
+  };
   exports.initializeClient = function(client) {
-    var newclient;
+    var newclient, updateMessage;
     newclient = {
       userId: client.sessionId,
       userColor: '#' + (Math.random() * 0xFFFFFF << 0).toString(16)
     };
     state.clients.push(newclient);
-    client.broadcast({
+    updateMessage = {
       type: "update",
       statePath: ["clients"],
       newValue: state.clients
-    });
+    };
+    applyUpdateMessage(updateMessage);
+    client.broadcast(updateMessage);
     return client.send({
       type: "initialize",
       userId: newclient.id,
@@ -62,15 +67,14 @@
     });
   };
   exports.handleClientMessage = function(client, message) {
-    console.log("client sent message: " + JSON.stringify(message));
     switch (message.type) {
       case "update":
-        applyDiff(message.statePath, message.newValue);
+        applyUpdateMessage(message);
         return client.broadcast(message);
     }
   };
   exports.disconnectClient = function(client) {
-    var c, index, _len, _ref;
+    var c, index, message, _len, _ref;
     _ref = state.clients;
     for (index = 0, _len = _ref.length; index < _len; index++) {
       c = _ref[index];
@@ -78,10 +82,12 @@
         state.clients.pop(index);
       }
     }
-    return client.broadcast({
+    message = {
       type: "update",
       statePath: ["clients"],
       newValue: state.clients
-    });
+    };
+    applyUpdateMessage(message);
+    return client.broadcast(message);
   };
 }).call(this);

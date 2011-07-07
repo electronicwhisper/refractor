@@ -12,7 +12,7 @@ clone = (obj) ->
 
 
 window.state = {
-  set: (newState) ->
+  set: (newState, isRemoteChange) ->
     # ===================================
     # call appropriate render methods
     # ===================================
@@ -39,13 +39,17 @@ window.state = {
       for k, v of filter.parameters
         if typeof v.value == "number"
           numericalParams[k] = v.value
+          # only redraw interface if change came from other user
+          if isRemoteChange
+            console.log(i, k, v.value)
+            interface.updateSlider(i, k, v.value)
       render.setParameters(i+1, numericalParams)
 
     if shouldRebuild
       interface.buildInterface(newState)
     currentState = clone(newState)
   get: () -> currentState
-  applyDiff: (path, newValue) ->
+  applyDiff: (path, newValue, isRemoteChange) ->
     root = clone(currentState)
     node = root
     for component, i in path[0...path.length - 1]
@@ -55,7 +59,7 @@ window.state = {
       node = node[component]
     lastComponent = path[path.length - 1]
     node[lastComponent] = newValue
-    state.set(root)
+    state.set(root, isRemoteChange)
 }
 
 window.state.sampleState = {

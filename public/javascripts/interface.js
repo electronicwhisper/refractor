@@ -1,6 +1,8 @@
 (function() {
-  var animationModes, buildButtonCallback, buildRangeCallback, changeFilter, changeParameterValue, changeTexture, connect, filterDefinitionIds, filterSelectIds, filters, initializeUI, processData, socket;
+  var animationModes, buildButtonCallback, buildRangeCallback, changeFilter, changeParameterValue, changeTexture, connect, filterDefinitionIds, filterSelectIds, filters, initializeUI, processData, socket, userColor, userId;
   socket = null;
+  userId = null;
+  userColor = null;
   filters = {};
   filterDefinitionIds = ["first-plug", "second-plug", "third-plug"];
   filterSelectIds = ["first-filter-select", "second-filter-select", "third-filter-select"];
@@ -9,9 +11,11 @@
     switch (data.type) {
       case "initialize":
         state.set(data.state);
+        userId = data.userId;
+        userColor = data.userColor;
         return time.start();
       case "update":
-        return state.applyDiff(data.statePath, data.newValue);
+        return state.applyDiff(data.statePath, data.newValue, true);
       default:
         return console.warn("Unknown message type: " + data.type);
     }
@@ -65,7 +69,7 @@
     payload = {
       'value': value
     };
-    state.applyDiff(path, payload);
+    state.applyDiff(path, payload, false);
     return socket.send({
       type: "update",
       statePath: path,

@@ -36,15 +36,20 @@ applyDiff = (path, newValue) ->
   lastComponent = path[path.length - 1]
   node[lastComponent] = newValue
 
+applyUpdateMessage = (message) ->
+  applyDiff(message.statePath, message.newValue)
+
 exports.initializeClient = (client) ->
   newclient =
     userId: client.sessionId
     userColor: '#'+(Math.random()*0xFFFFFF<<0).toString(16)
   state.clients.push(newclient)
-  client.broadcast({
-    type: "update",
-    statePath: ["clients"],
-    newValue: state.clients})
+  updateMessage =
+    type: "update"
+    statePath: ["clients"]
+    newValue: state.clients
+  applyUpdateMessage(updateMessage)
+  client.broadcast(updateMessage)
   client.send({
     type: "initialize",
     userId: newclient.id,
@@ -52,18 +57,19 @@ exports.initializeClient = (client) ->
     state: state })
 
 exports.handleClientMessage = (client, message) ->
-  console.log("client sent message: " + JSON.stringify(message))
+  # console.log("client sent message: " + JSON.stringify(message))
   switch message.type
     when "update"
-      applyDiff(message.statePath, message.newValue)
+      applyUpdateMessage(message)
       client.broadcast(message)
 
 exports.disconnectClient = (client) ->
   for c, index in state.clients
     if c and c.id == client.sessionId
       state.clients.pop(index)
-  client.broadcast({
-    type: "update",
-    statePath: ["clients"],
+  message =
+    type: "update"
+    statePath: ["clients"]
     newValue: state.clients
-  })
+  applyUpdateMessage(message)
+  client.broadcast(message)

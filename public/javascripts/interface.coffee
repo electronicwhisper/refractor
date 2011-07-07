@@ -1,4 +1,6 @@
 socket = null
+userId = null
+userColor = null
 filters = {}
 
 filterDefinitionIds = ["first-plug", "second-plug", "third-plug"]
@@ -10,8 +12,12 @@ animationModes      = [
 
 processData = (data) ->
   switch(data.type)
-    when "initialize" then state.set(data.state); time.start()
-    when "update"     then state.applyDiff(data.statePath, data.newValue)
+    when "initialize"
+      state.set(data.state)
+      userId = data.userId
+      userColor = data.userColor
+      time.start()
+    when "update"     then state.applyDiff(data.statePath, data.newValue, true)
     else console.warn("Unknown message type: " + data.type)
 
 connect = () ->
@@ -38,7 +44,7 @@ changeFilter = (filterIndex, filterKey) ->
 changeParameterValue = (filterIndex, parameterName, value) ->
   path = ['filters', filterIndex, "parameters", parameterName]
   payload = { 'value': value }
-  state.applyDiff(path, payload)
+  state.applyDiff(path, payload, false)
   socket.send({ type: "update", statePath: path, newValue: payload })
 
 initializeUI = () ->
