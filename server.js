@@ -1,5 +1,5 @@
 (function() {
-  var applyDiff, applyUpdateMessage, state;
+  var applyDiff, applyUpdateMessage, randomHexColor, state;
   state = {
     clients: [],
     initialTexture: "images/textures/sample.png",
@@ -45,11 +45,14 @@
   applyUpdateMessage = function(message) {
     return applyDiff(message.statePath, message.newValue);
   };
+  randomHexColor = function() {
+    return '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
+  };
   exports.initializeClient = function(client) {
     var newclient, updateMessage;
     newclient = {
       userId: client.sessionId,
-      userColor: '#' + (Math.random() * 0xFFFFFF << 0).toString(16)
+      userColor: randomHexColor()
     };
     state.clients.push(newclient);
     updateMessage = {
@@ -61,8 +64,8 @@
     client.broadcast(updateMessage);
     return client.send({
       type: "initialize",
-      userId: newclient.id,
-      userColor: newclient.color,
+      userId: newclient.userId,
+      userColor: newclient.userColor,
       state: state
     });
   };

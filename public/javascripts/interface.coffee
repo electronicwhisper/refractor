@@ -13,6 +13,7 @@ animationModes      = [
 processData = (data) ->
   switch(data.type)
     when "initialize"
+      console.log(data)
       state.set(data.state)
       userId = data.userId
       userColor = data.userColor
@@ -37,7 +38,7 @@ changeFilter = (filterIndex, filterKey) ->
   params = {}
   for k, v of window.filters[filterKey].defaults
     params[k] = { value: v }
-  payload = { name: filterKey, parameters: params }
+  payload = { name: filterKey, parameters: params, userColor: userColor }
   state.applyDiff(path, payload)
   socket.send({ type: "update", statePath: path, newValue: payload })
 
@@ -98,6 +99,8 @@ window.interface = {
       selectElement.value = filter.name
       definition = $(document.getElementById(filterDefinitionIds[filterIndex]))
       definition.empty()
+      if filter.userColor
+        definition.css('border-color', filter.userColor)
 
       for parameterName, bundle of filter.parameters
         div = $("<div>")

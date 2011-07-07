@@ -10,6 +10,7 @@
   processData = function(data) {
     switch (data.type) {
       case "initialize":
+        console.log(data);
         state.set(data.state);
         userId = data.userId;
         userColor = data.userColor;
@@ -54,7 +55,8 @@
     }
     payload = {
       name: filterKey,
-      parameters: params
+      parameters: params,
+      userColor: userColor
     };
     state.applyDiff(path, payload);
     return socket.send({
@@ -148,6 +150,9 @@
         selectElement.value = filter.name;
         definition = $(document.getElementById(filterDefinitionIds[filterIndex]));
         definition.empty();
+        if (filter.userColor) {
+          definition.css('border-color', filter.userColor);
+        }
         _results.push((function() {
           var _i, _len2, _ref2, _results2;
           _ref2 = filter.parameters;

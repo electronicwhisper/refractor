@@ -39,10 +39,13 @@ applyDiff = (path, newValue) ->
 applyUpdateMessage = (message) ->
   applyDiff(message.statePath, message.newValue)
 
+randomHexColor = () ->
+  '#'+(Math.random()*0xFFFFFF<<0).toString(16)
+
 exports.initializeClient = (client) ->
   newclient =
     userId: client.sessionId
-    userColor: '#'+(Math.random()*0xFFFFFF<<0).toString(16)
+    userColor: randomHexColor()
   state.clients.push(newclient)
   updateMessage =
     type: "update"
@@ -52,8 +55,8 @@ exports.initializeClient = (client) ->
   client.broadcast(updateMessage)
   client.send({
     type: "initialize",
-    userId: newclient.id,
-    userColor: newclient.color
+    userId: newclient.userId,
+    userColor: newclient.userColor
     state: state })
 
 exports.handleClientMessage = (client, message) ->
