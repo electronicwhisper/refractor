@@ -16,7 +16,6 @@ window.state = {
     # ===================================
     # call appropriate render methods
     # ===================================
-    console.log("setting new state", newState)
     shouldRebuild = false
     if !currentState
       # initializing a new state

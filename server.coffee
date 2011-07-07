@@ -26,6 +26,16 @@ state = {
   ]
 }
 
+applyDiff = (path, newValue) ->
+  node = state
+  for component, i in path[0...path.length - 1]
+      if (!node.hasOwnProperty(component))
+        console.error("Invalid path component for state node", component, node)
+        return
+      node = node[component]
+  lastComponent = path[path.length - 1]
+  node[lastComponent] = newValue
+
 exports.initializeClient = (client) ->
   newclient =
     userId: client.sessionId
@@ -45,6 +55,7 @@ exports.handleClientMessage = (client, message) ->
   console.log("client sent message: " + JSON.stringify(message))
   switch message.type
     when "update"
+      applyDiff(message.statePath, message.newValue)
       client.broadcast(message)
 
 exports.disconnectClient = (client) ->

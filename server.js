@@ -1,5 +1,5 @@
 (function() {
-  var state;
+  var applyDiff, state;
   state = {
     clients: [],
     initialTexture: "images/textures/sample.png",
@@ -27,6 +27,21 @@
       }
     ]
   };
+  applyDiff = function(path, newValue) {
+    var component, i, lastComponent, node, _len, _ref;
+    node = state;
+    _ref = path.slice(0, path.length - 1);
+    for (i = 0, _len = _ref.length; i < _len; i++) {
+      component = _ref[i];
+      if (!node.hasOwnProperty(component)) {
+        console.error("Invalid path component for state node", component, node);
+        return;
+      }
+      node = node[component];
+    }
+    lastComponent = path[path.length - 1];
+    return node[lastComponent] = newValue;
+  };
   exports.initializeClient = function(client) {
     var newclient;
     newclient = {
@@ -50,6 +65,7 @@
     console.log("client sent message: " + JSON.stringify(message));
     switch (message.type) {
       case "update":
+        applyDiff(message.statePath, message.newValue);
         return client.broadcast(message);
     }
   };

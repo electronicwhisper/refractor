@@ -3,7 +3,10 @@ filters = {}
 
 filterDefinitionIds = ["first-plug", "second-plug", "third-plug"]
 filterSelectIds     = ["first-filter-select", "second-filter-select", "third-filter-select"]
-animationModes      = [["ascending", "&rarr;"], ["descending", "&larr;"], ["oscillating", "&harr;"]]
+animationModes      = [
+  ["ascending", "&rarr;"],
+  ["descending", "&larr;"],
+  ["oscillating", "&harr;"]]
 
 processData = (data) ->
   switch(data.type)
