@@ -134,9 +134,12 @@
   };
   window.interface = {
     updateSlider: function(filterIndex, parameterName, newValue) {
-      var rangeId;
+      var rangeId, slider;
       rangeId = ['filter', filterIndex, parameterName, 'range'].join('-');
-      return document.getElementById(rangeId).value = newValue * 100;
+      slider = document.getElementById(rangeId);
+      if (slider) {
+        return slider.value = newValue * 100;
+      }
     },
     buildInterface: function(state) {
       var bundle, definition, div, filter, filterIndex, mode, modeLink, modeName, modeSymbol, parameterName, range, selectElement, _len, _ref, _results;

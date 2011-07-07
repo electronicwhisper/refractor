@@ -89,7 +89,9 @@ window.interface = {
 
   updateSlider: (filterIndex, parameterName, newValue) ->
     rangeId = ['filter', filterIndex, parameterName, 'range'].join('-')
-    document.getElementById(rangeId).value = newValue * 100
+    slider = document.getElementById(rangeId)
+    if slider
+      slider.value = newValue * 100
 
   buildInterface: (state) ->
     $('#texture-input input').val(state.initialTexture)
