@@ -41,6 +41,48 @@ addFilters {
         gl_FragColor = vec4(col,1.0);
     }
     """
+  squareCrop: """
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+
+    uniform vec2 resolution;
+    uniform sampler2D tex0;
+
+    void main(void)
+    {
+        vec2 p = gl_FragCoord.xy / resolution.xy;
+        vec2 uv;
+
+		if (resolution.x > resolution.y) {
+			float shift = (resolution.x - resolution.y)/2.0;
+			if (gl_FragCoord.x < shift || gl_FragCoord.x + shift > resolution.y + shift * 2.0) {
+				//uv.x = mod(gl_FragCoord.x/resolution.y, 1.0);
+				gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+				return;
+			}
+			else
+				uv.x = (gl_FragCoord.x - shift)/resolution.y;
+				
+			uv.y = 1.0 - p.y;
+		}
+		else {
+			if (gl_FragCoord.y > resolution.x) {
+				//uv.y = mod(gl_FragCoord.y/resolution.x, 1.0);
+				gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+				return;
+			}
+			else
+				uv.y = gl_FragCoord.y/resolution.x;
+			
+			uv.x = p.x;
+		}
+
+        vec3 col = texture2D(tex0, uv).xyz;
+
+        gl_FragColor = vec4(col,1.0);
+    }
+    """
   rotate: """
     #ifdef GL_ES
     precision highp float;
