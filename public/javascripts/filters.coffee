@@ -240,6 +240,8 @@ addFilters {
     uniform vec2 resolution;
     uniform sampler2D tex0;
 
+	uniform float phasex;
+	uniform float phasey;
     uniform float amount;
 
     void main(void)
@@ -252,14 +254,14 @@ addFilters {
         vec2 uv;
 
         if (mod(floor(gl_FragCoord.x/sx), 2.0) == 0.0)
-            uv.x = mod(gl_FragCoord.x,sx)/sx;
+            uv.x = mod(phasex + mod(gl_FragCoord.x,sx)/sx, 1.0);
         else
-            uv.x = 1.0 - mod(gl_FragCoord.x,sx)/sx;
+            uv.x = mod(phasex + 1.0 - mod(gl_FragCoord.x,sx)/sx, 1.0);
 
         if (mod(floor(gl_FragCoord.y/sy), 2.0) == 0.0)
-            uv.y = mod(gl_FragCoord.y,sy)/sy;
+            uv.y = mod(phasey + mod(gl_FragCoord.y,sy)/sy, 1.0);
         else
-            uv.y = 1.0 - mod(gl_FragCoord.y,sy)/sy;
+            uv.y = mod(phasey + 1.0 - mod(gl_FragCoord.y,sy)/sy, 1.0);
 
         vec3 col = texture2D(tex0, uv).xyz;
 
