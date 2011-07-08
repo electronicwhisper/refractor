@@ -1,11 +1,12 @@
 (function() {
   var frames, t, time;
-  frames = 200;
+  window.tempo = 1;
+  frames = 20000;
   t = 0;
   time = window.time = {
     start: function() {
       var filter, i, k, toSet, v, _len, _ref, _ref2;
-      t = (t + 1) % frames;
+      t = (t + 100 * window.tempo) % frames;
       _ref = state.get().filters;
       for (i = 0, _len = _ref.length; i < _len; i++) {
         filter = _ref[i];

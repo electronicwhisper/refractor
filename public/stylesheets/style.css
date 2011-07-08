@@ -12,7 +12,6 @@ div {
     padding: 0;
     margin: 0;
 }
-}
 
 canvas {
     position: absolute;
@@ -21,7 +20,31 @@ canvas {
     z-index: -1;
 }
 
-#workflow {
+#settings {
+	position: absolute;
+	height: 20px;
+	background-color: #eee;
+	bottom: 100%;
+	left: 0px;
+	right: 0px;
+	border-top: 1px solid black;
+	border-bottom: 2px solid #ddd;
+	padding: 0px 5px;
+}
+
+#settings .label {
+	display: inline;
+	font-size: 80%;
+	font-weight: bolder;
+	vertical-align: top;
+}
+
+#settings > div {
+	display: inline-block;
+	padding: 2px;
+}
+
+#control {
     background-color: white;
     width: 800px;
     height: 200px;
@@ -80,8 +103,11 @@ canvas {
 .modeButton {
     font-size: 16px;
     margin-right: 7px;
+	-webkit-border-radius: 5px;
+	cursor: pointer;
 }
 
 .modeButton.selected {
-    background-color: yellow;
+    background-color: #00B7FF;
+	color: white;
 }

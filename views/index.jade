@@ -1,20 +1,26 @@
 
 div#container
-  div#library
-    
-  div#workflow
-    div#input-box.plug
-        img
-    div#first-plug.plug
-    div#second-plug.plug
-    div#third-plug.plug
-    div#first-arrow.arrow= "&rarr;"
-    div#second-arrow.arrow= "&rarr;"
-    div#third-arrow.arrow= "&rarr;"
+	div#library
 
-    div#texture-input
-        span= 'url:'
-        input[type="text" value="/images/textures/sample.png"]
-    select#first-filter-select.filter-select
-    select#second-filter-select.filter-select
-    select#third-filter-select.filter-select
+	div#control
+		div#settings
+			div#set-tempo
+				.label tempo:
+				input#tempo(type="range", min="1", max="100", step="1", value="100")
+			div#set-square-crop
+		div#workflow
+			div#input-box.plug
+				img
+			div#first-plug.plug
+			div#second-plug.plug
+			div#third-plug.plug
+			div#first-arrow.arrow= "&rarr;"
+			div#second-arrow.arrow= "&rarr;"
+			div#third-arrow.arrow= "&rarr;"
+
+			div#texture-input
+				span= 'url:'
+				input[type="text" value="/images/textures/sample.png"]
+			select#first-filter-select.filter-select
+			select#second-filter-select.filter-select
+			select#third-filter-select.filter-select
