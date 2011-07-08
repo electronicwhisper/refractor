@@ -41,6 +41,35 @@ addFilters {
         gl_FragColor = vec4(col,1.0);
     }
     """
+  rotate: """
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+
+	uniform float amount;
+
+    uniform vec2 resolution;
+    uniform sampler2D tex0;
+
+    void main(void)
+    {
+        float angle = amount*2.0*3.1416;
+		vec2 p = gl_FragCoord.xy / resolution.xy;
+
+        vec2 uv;
+        uv.x = p.x * cos(angle) + (1.0 - p.y) * sin(angle);
+        uv.y = -p.x * sin(angle) + (1.0 - p.y) * cos(angle);
+
+		if (uv.x > 1.0) uv.x -= 1.0;
+		if (uv.x < 0.0) uv.x += 1.0;
+		if (uv.y > 1.0) uv.y -= 1.0;
+		if (uv.y < 0.0) uv.y += 1.0;
+
+        vec3 col = texture2D(tex0, uv).xyz;
+
+        gl_FragColor = vec4(col,1.0);
+    }
+    """
   kaleido: """
     #ifdef GL_ES
     precision highp float;
