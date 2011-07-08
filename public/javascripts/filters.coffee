@@ -268,4 +268,47 @@ addFilters {
         gl_FragColor = vec4(col,1.0);
     }
     """
+  madpatternP4M: """
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+
+    uniform vec2 resolution;
+    uniform sampler2D tex0;
+
+    uniform float amount;
+
+    void main(void)
+    {
+        float mult = 1.0 + amount*10.0;
+        float sx = resolution.x/mult;
+        float sy = resolution.y/mult;
+        vec2 p = gl_FragCoord.xy / resolution.xy;
+
+        vec2 uv, tile;
+
+        if (mod(floor(gl_FragCoord.x/sx), 2.0) == 0.0)
+            tile.x = mod(gl_FragCoord.x,sx)/sx;
+        else
+            tile.x = 1.0 - mod(gl_FragCoord.x,sx)/sx;
+
+        if (mod(floor(gl_FragCoord.y/sy), 2.0) == 0.0)
+            tile.y = mod(gl_FragCoord.y,sy)/sy;
+        else
+            tile.y = 1.0 - mod(gl_FragCoord.y,sy)/sy;
+
+		if ( abs(atan(tile.y/tile.x)) < 3.1416/4.0 ) {
+			uv.x = tile.x;
+			uv.y = tile.y;
+		}
+		else {
+			uv.x = tile.y;
+			uv.y = tile.x;
+		} 
+
+        vec3 col = texture2D(tex0, uv).xyz;
+
+        gl_FragColor = vec4(col,1.0);
+    }
+    """
 }
