@@ -25,9 +25,9 @@ canvas {
 	height: 20px;
 	background-color: #eee;
 	bottom: 100%;
-	left: 0px;
-	right: 0px;
-	border-top: 1px solid black;
+	left: -1px;
+	right: -1px;
+	border: 1px solid black;
 	border-bottom: 2px solid #ddd;
 	padding: 0px 5px;
 }
