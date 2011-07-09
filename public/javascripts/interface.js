@@ -148,6 +148,10 @@
       $('input#tempo').change(function() {
         return window.tempo = $(this).val() / 100;
       });
+      $("#show-controls").click(function() {
+        $("#workflow").toggle();
+        return $("#control").toggleClass("collapsed");
+      });
       _ref = state.filters;
       _results = [];
       for (filterIndex = 0, _len = _ref.length; filterIndex < _len; filterIndex++) {

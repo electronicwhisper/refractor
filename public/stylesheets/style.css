@@ -57,6 +57,10 @@ canvas {
     border: 1px solid black;
 }
 
+#control.collapsed {
+	height: auto;
+}
+
 #input-box {
     display:inline-block;
     height: 150px;

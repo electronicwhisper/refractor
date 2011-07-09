@@ -98,6 +98,10 @@ window.interface = {
     $('#input-box img').attr('src', state.initialTexture)
     $('input#tempo').change -> 
         window.tempo = $(this).val() / 100
+    $("#show-controls").click ->
+	    $("#workflow").toggle()
+	    $("#control").toggleClass("collapsed")
+
     for filter, filterIndex in state.filters
       selectElement = document.getElementById(filterSelectIds[filterIndex])
       selectElement.value = filter.name
