@@ -44,6 +44,12 @@ canvas {
 	padding: 2px;
 }
 
+#set-show-controls {
+	position: absolute;
+	right: 5px;
+	top: 2px;
+}
+
 #control {
     background-color: white;
     width: 800px;
