@@ -112,6 +112,49 @@ addFilters {
         gl_FragColor = vec4(col,1.0);
     }
     """
+  dihedral: """
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+
+    uniform vec2 resolution;
+    uniform sampler2D tex0;
+
+    uniform float amount;
+
+    void main(void)
+    {
+        float divider = 3.146/(amount*100.0);
+        vec2 p = 0.5 - gl_FragCoord.xy / resolution.xy;
+
+		float a;
+        if (((p.y < 0.0) && (p.x > 0.0)) || ((p.x < 0.0) && (p.y > 0.0)))
+            a = abs(atan(p.x/p.y));
+        else
+            a = abs(atan(p.y/p.x));
+        if (p.x < 0.0 && p.y >= 0.0 ) a += 3.146/2.0;
+        if (p.x < 0.0 && p.y < 0.0 ) a += 3.146;
+        if (p.x > 0.0 && p.y < 0.0 ) a += 3.146*3.0/2.0;
+	
+		float r = sqrt(dot(p,p));
+		
+        vec2 uv;
+		if (mod(floor(a/divider), 2.0) == 0.0) {
+			a = mod(a, divider);
+			uv.x = r * cos(a);
+			uv.y = r * sin(a);
+		}
+		else {
+			a = divider - mod(a, divider);
+			uv.x = r * cos(a);
+			uv.y = r * sin(a);
+		}
+
+        vec3 col = texture2D(tex0, uv).xyz;
+
+        gl_FragColor = vec4(col,1.0);
+    }
+    """
   kaleido: """
     #ifdef GL_ES
     precision highp float;
@@ -411,6 +454,49 @@ addFilters {
 			uv.x = tile.y;
 			uv.y = tile.x;
 		} 
+
+        vec3 col = texture2D(tex0, uv).xyz;
+
+        gl_FragColor = vec4(col,1.0);
+    }
+    """
+  madpatternP3M1: """
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+
+    uniform vec2 resolution;
+    uniform sampler2D tex0;
+
+    uniform float amount;
+
+    void main(void)
+    {
+        float sixty = 3.146/3.0;
+        vec2 p = 0.5 - gl_FragCoord.xy / resolution.xy;
+
+		float a;
+        if (((p.y < 0.0) && (p.x > 0.0)) || ((p.x < 0.0) && (p.y > 0.0)))
+            a = abs(atan(p.x/p.y));
+        else
+            a = abs(atan(p.y/p.x));
+        if (p.x < 0.0 && p.y >= 0.0 ) a += 3.146/2.0;
+        if (p.x < 0.0 && p.y < 0.0 ) a += 3.146;
+        if (p.x > 0.0 && p.y < 0.0 ) a += 3.146*3.0/2.0;
+	
+		float r = sqrt(dot(p,p));
+		
+        vec2 uv;
+		if (mod(floor(a/sixty), 2.0) == 0.0) {
+			a = mod(a, sixty);
+			uv.x = r * cos(a);
+			uv.y = r * sin(a);
+		}
+		else {
+			a = sixty - mod(a, sixty);
+			uv.x = r * cos(a);
+			uv.y = r * sin(a);
+		}
 
         vec3 col = texture2D(tex0, uv).xyz;
 
