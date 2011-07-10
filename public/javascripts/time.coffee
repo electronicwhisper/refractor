@@ -1,10 +1,10 @@
-
-frames = 200
+window.tempo = 1
+frames = 20000
 t = 0
 
 time = window.time = {
   start: () ->
-    t = (t+1) % frames
+    t = (t+100*window.tempo) % frames
 
     # set parameters that are ascending, descending, or oscillating
     for filter, i in state.get().filters
