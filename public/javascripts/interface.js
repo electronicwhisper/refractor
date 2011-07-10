@@ -1,6 +1,8 @@
 (function() {
-  var animationModes, buildButtonCallback, buildRangeCallback, changeFilter, changeParameterValue, changeTexture, connect, filterDefinitionIds, filterSelectIds, filters, initializeUI, processData, socket;
+  var animationModes, buildButtonCallback, buildRangeCallback, changeFilter, changeParameterValue, changeTexture, connect, filterDefinitionIds, filterSelectIds, filters, initializeUI, processData, socket, userColor, userId;
   socket = null;
+  userId = null;
+  userColor = null;
   filters = {};
   filterDefinitionIds = ["first-plug", "second-plug", "third-plug"];
   filterSelectIds = ["first-filter-select", "second-filter-select", "third-filter-select"];
@@ -8,10 +10,13 @@
   processData = function(data) {
     switch (data.type) {
       case "initialize":
+        console.log(data);
         state.set(data.state);
+        userId = data.userId;
+        userColor = data.userColor;
         return time.start();
       case "update":
-        return state.applyDiff(data.statePath, data.newValue);
+        return state.applyDiff(data.statePath, data.newValue, true);
       default:
         return console.warn("Unknown message type: " + data.type);
     }
@@ -50,7 +55,8 @@
     }
     payload = {
       name: filterKey,
-      parameters: params
+      parameters: params,
+      userColor: userColor
     };
     state.applyDiff(path, payload);
     return socket.send({
@@ -65,7 +71,7 @@
     payload = {
       'value': value
     };
-    state.applyDiff(path, payload);
+    state.applyDiff(path, payload, false);
     return socket.send({
       type: "update",
       statePath: path,
@@ -128,14 +134,24 @@
   };
   window.interface = {
     updateSlider: function(filterIndex, parameterName, newValue) {
-      var rangeId;
+      var rangeId, slider;
       rangeId = ['filter', filterIndex, parameterName, 'range'].join('-');
-      return document.getElementById(rangeId).value = newValue * 100;
+      slider = document.getElementById(rangeId);
+      if (slider) {
+        return slider.value = newValue * 100;
+      }
     },
     buildInterface: function(state) {
       var bundle, definition, div, filter, filterIndex, mode, modeLink, modeName, modeSymbol, parameterName, range, selectElement, _len, _ref, _results;
       $('#texture-input input').val(state.initialTexture);
       $('#input-box img').attr('src', state.initialTexture);
+      $('input#tempo').change(function() {
+        return window.tempo = $(this).val() / 100;
+      });
+      $("#show-controls").click(function() {
+        $("#workflow").toggle();
+        return $("#control").toggleClass("collapsed");
+      });
       _ref = state.filters;
       _results = [];
       for (filterIndex = 0, _len = _ref.length; filterIndex < _len; filterIndex++) {
@@ -144,6 +160,9 @@
         selectElement.value = filter.name;
         definition = $(document.getElementById(filterDefinitionIds[filterIndex]));
         definition.empty();
+        if (filter.userColor) {
+          definition.css('border-color', filter.userColor);
+        }
         _results.push((function() {
           var _i, _len2, _ref2, _results2;
           _ref2 = filter.parameters;

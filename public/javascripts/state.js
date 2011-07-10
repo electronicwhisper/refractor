@@ -14,9 +14,8 @@
     return newInstance;
   };
   window.state = {
-    set: function(newState) {
+    set: function(newState, isRemoteChange) {
       var filter, i, k, numericalParams, shouldRebuild, v, _len, _len2, _ref, _ref2, _ref3;
-      console.log("setting new state", newState);
       shouldRebuild = false;
       if (!currentState) {
         render.setPipeline.apply(render, [newState.initialTexture].concat(__slice.call((function() {
@@ -53,6 +52,10 @@
           v = _ref3[k];
           if (typeof v.value === "number") {
             numericalParams[k] = v.value;
+            if (isRemoteChange) {
+              console.log(i, k, v.value);
+              interface.updateSlider(i, k, v.value);
+            }
           }
         }
         render.setParameters(i + 1, numericalParams);
@@ -65,7 +68,7 @@
     get: function() {
       return currentState;
     },
-    applyDiff: function(path, newValue) {
+    applyDiff: function(path, newValue, isRemoteChange) {
       var component, i, lastComponent, node, root, _len, _ref;
       root = clone(currentState);
       node = root;
@@ -80,7 +83,7 @@
       }
       lastComponent = path[path.length - 1];
       node[lastComponent] = newValue;
-      return state.set(root);
+      return state.set(root, isRemoteChange);
     }
   };
   window.state.sampleState = {

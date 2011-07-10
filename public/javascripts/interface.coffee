@@ -1,14 +1,24 @@
 socket = null
+userId = null
+userColor = null
 filters = {}
 
 filterDefinitionIds = ["first-plug", "second-plug", "third-plug"]
 filterSelectIds     = ["first-filter-select", "second-filter-select", "third-filter-select"]
-animationModes      = [["ascending", "&rarr;"], ["descending", "&larr;"], ["oscillating", "&harr;"]]
+animationModes      = [
+  ["ascending", "&rarr;"],
+  ["descending", "&larr;"],
+  ["oscillating", "&harr;"]]
 
 processData = (data) ->
   switch(data.type)
-    when "initialize" then state.set(data.state); time.start()
-    when "update"     then state.applyDiff(data.statePath, data.newValue)
+    when "initialize"
+      console.log(data)
+      state.set(data.state)
+      userId = data.userId
+      userColor = data.userColor
+      time.start()
+    when "update"     then state.applyDiff(data.statePath, data.newValue, true)
     else console.warn("Unknown message type: " + data.type)
 
 connect = () ->
@@ -28,14 +38,14 @@ changeFilter = (filterIndex, filterKey) ->
   params = {}
   for k, v of window.filters[filterKey].defaults
     params[k] = { value: v }
-  payload = { name: filterKey, parameters: params }
+  payload = { name: filterKey, parameters: params, userColor: userColor }
   state.applyDiff(path, payload)
   socket.send({ type: "update", statePath: path, newValue: payload })
 
 changeParameterValue = (filterIndex, parameterName, value) ->
   path = ['filters', filterIndex, "parameters", parameterName]
   payload = { 'value': value }
-  state.applyDiff(path, payload)
+  state.applyDiff(path, payload, false)
   socket.send({ type: "update", statePath: path, newValue: payload })
 
 initializeUI = () ->
@@ -79,16 +89,26 @@ window.interface = {
 
   updateSlider: (filterIndex, parameterName, newValue) ->
     rangeId = ['filter', filterIndex, parameterName, 'range'].join('-')
-    document.getElementById(rangeId).value = newValue * 100
+    slider = document.getElementById(rangeId)
+    if slider
+      slider.value = newValue * 100
 
   buildInterface: (state) ->
     $('#texture-input input').val(state.initialTexture)
     $('#input-box img').attr('src', state.initialTexture)
+    $('input#tempo').change -> 
+        window.tempo = $(this).val() / 100
+    $("#show-controls").click ->
+	    $("#workflow").toggle()
+	    $("#control").toggleClass("collapsed")
+
     for filter, filterIndex in state.filters
       selectElement = document.getElementById(filterSelectIds[filterIndex])
       selectElement.value = filter.name
       definition = $(document.getElementById(filterDefinitionIds[filterIndex]))
       definition.empty()
+      if filter.userColor
+        definition.css('border-color', filter.userColor)
 
       for parameterName, bundle of filter.parameters
         div = $("<div>")
