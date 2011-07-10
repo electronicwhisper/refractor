@@ -145,6 +145,13 @@
       var bundle, definition, div, filter, filterIndex, mode, modeLink, modeName, modeSymbol, parameterName, range, selectElement, _len, _ref, _results;
       $('#texture-input input').val(state.initialTexture);
       $('#input-box img').attr('src', state.initialTexture);
+      $('input#tempo').change(function() {
+        return window.tempo = $(this).val() / 100;
+      });
+      $("#show-controls").click(function() {
+        $("#workflow").toggle();
+        return $("#control").toggleClass("collapsed");
+      });
       _ref = state.filters;
       _results = [];
       for (filterIndex = 0, _len = _ref.length; filterIndex < _len; filterIndex++) {
