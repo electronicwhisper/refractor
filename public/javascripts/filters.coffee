@@ -96,18 +96,72 @@ addFilters {
     void main(void)
     {
         float angle = amount*2.0*3.1416;
-		vec2 p = gl_FragCoord.xy / resolution.xy;
+		vec2 p = 0.5 - gl_FragCoord.xy / resolution.xy;
 
         vec2 uv;
-        uv.x = p.x * cos(angle) + (1.0 - p.y) * sin(angle);
-        uv.y = -p.x * sin(angle) + (1.0 - p.y) * cos(angle);
+        uv.x = -(p.x * cos(angle) + p.y * sin(angle));
+        uv.y = -p.x * sin(angle) + p.y * cos(angle);
 
-		if (uv.x > 1.0) uv.x -= 1.0;
-		if (uv.x < 0.0) uv.x += 1.0;
-		if (uv.y > 1.0) uv.y -= 1.0;
-		if (uv.y < 0.0) uv.y += 1.0;
+        vec3 col = texture2D(tex0, uv + 0.5).xyz;
 
-        vec3 col = texture2D(tex0, uv).xyz;
+        gl_FragColor = vec4(col,1.0);
+    }
+    """
+  explode: """
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+
+    uniform vec2 resolution;
+    uniform sampler2D tex0;
+
+	uniform float zoom;
+
+    void main(void)
+    {
+        vec2 p = 0.5 - gl_FragCoord.xy / resolution.xy;
+
+		float a = atan(p.y, p.x);
+		float r = sqrt(dot(p, p));
+
+        vec2 uv;
+        uv.x = (r*cos(zoom+a))/(r);
+        uv.y = (r*sin(zoom+a))/(r);
+
+        vec3 col = texture2D(tex0, uv - 0.5).xyz;
+
+        gl_FragColor = vec4(col,1.0);
+    }
+    """
+  sphere: """
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+
+    uniform vec2 resolution;
+    uniform sampler2D tex0;
+
+	uniform float zoom;
+
+    void main(void)
+    {
+        vec2 p = 0.5 - gl_FragCoord.xy / resolution.xy;
+
+		float a = atan(p.y, p.x) + zoom;
+		float r = sqrt(dot(p, p));
+		float multiplier = 1.0 - pow(zoom-0.1, 1.0/(0.5 - r));
+
+        vec2 uv;
+		if (multiplier > 0.0) {
+			uv.x = -p.x * multiplier;
+			uv.y = p.y * multiplier;
+		}
+		else {
+			uv.x = -p.x;
+			uv.y = p.y;
+		}
+
+        vec3 col = texture2D(tex0, uv + 0.5).xyz;
 
         gl_FragColor = vec4(col,1.0);
     }
@@ -222,6 +276,38 @@ addFilters {
 	    gl_FragColor = vec4(col/(.1+w),1.0);
     }
     """
+	#   test: """
+	#     #ifdef GL_ES
+	#     precision highp float;
+	#     #endif
+	#     
+	#     // based on 'Kaleidoscope' by iq (2009)
+	#     // http://www.iquilezles.org/apps/shadertoy/
+	# 
+	#     uniform vec2 resolution;
+	#     uniform sampler2D tex0;
+	# 
+	# uniform float amount;
+	# uniform float b;
+	# uniform float c;
+	# 
+	#     void main(void)
+	#     {
+	#     vec2 p = 0.5 + gl_FragCoord.xy / resolution.xy;
+	#     float a = atan(p.y,p.x);
+	#     float r = sqrt(dot(p,p));
+	# 
+	#     vec2 uv;
+	#     uv.x = 0.0;
+	#     uv.y = 1.5 * b * p.y + 0.2 * c * cos(11.0 * amount * p.x) - sin(c * 3.0 * amount * p.x);
+	#     //uv.y = p.y;
+	# 
+	# 	float w = abs(0.5 - p.y);
+	#     vec3 col = texture2D(tex0,uv).xyz;
+	# 
+	#     gl_FragColor = vec4(col,1.0);
+	#     }
+	#     """
   tile: """
     #ifdef GL_ES
     precision highp float;
