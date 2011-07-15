@@ -514,6 +514,57 @@ addFilters {
         gl_FragColor = vec4(col*amount+col2*(1.0-amount),1.0);
     }
     """
+  # hsv: """
+  #   #ifdef GL_ES
+  #   precision highp float;
+  #   #endif
+  #   
+  #   #define RED 0
+  #   #define GREEN 1
+  #   #define BLUE 2
+  #   
+  #   uniform vec2 resolution;
+  #   uniform sampler2D tex0;
+  #   
+  #   const float epsilon = 1e-6;
+  #   
+  # 
+  #   vec3 HSVtoRGB(vec3 color)
+  #   {
+  #       float f,p,q,t, hueRound;
+  #       int hueIndex;
+  #       float hue, saturation, value;
+  #       vec3 result;
+  # 
+  #       /* just for clarity */
+  #       hue = color.x;
+  #       saturation = color.y;
+  #       value = color.z;
+  # 
+  #       hueRound = floor(hue * 6.0);
+  #       hueIndex = int(hueRound);
+  #       f = (hue * 6.0) - hueRound;
+  #       p = value * (1.0 - saturation);
+  #       q = value * (1.0 - f*saturation);
+  #       t = value * (1.0 - (1.0 - f)*saturation);
+  # 
+  # 
+  #       return result;
+  #   }
+  #   
+  #   void main(void)
+  #   {
+  #       vec2 p = gl_FragCoord.xy / resolution.xy;
+  # 
+  #       vec2 uv;
+  #       uv.x = p.x;
+  #       uv.y = 1.0 - p.y;
+  # 
+  #       vec3 col = texture2D(tex0, uv).xyz;
+  # 
+  #       gl_FragColor = vec4(col,1.0);
+  #   }
+  # """
   madpatternPMM: """
     #ifdef GL_ES
     precision highp float;
