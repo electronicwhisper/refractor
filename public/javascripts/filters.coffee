@@ -178,7 +178,7 @@ addFilters {
 
     void main(void)
     {
-        float divider = 3.146/(amount*100.0);
+        float divider = 3.1416/(amount*100.0);
         vec2 p = 0.5 - gl_FragCoord.xy / resolution.xy;
 
 		float a;
@@ -186,9 +186,9 @@ addFilters {
             a = abs(atan(p.x/p.y));
         else
             a = abs(atan(p.y/p.x));
-        if (p.x < 0.0 && p.y >= 0.0 ) a += 3.146/2.0;
-        if (p.x < 0.0 && p.y < 0.0 ) a += 3.146;
-        if (p.x > 0.0 && p.y < 0.0 ) a += 3.146*3.0/2.0;
+        if (p.x < 0.0 && p.y >= 0.0 ) a += 3.1416/2.0;
+        if (p.x < 0.0 && p.y < 0.0 ) a += 3.1416;
+        if (p.x > 0.0 && p.y < 0.0 ) a += 3.1416*3.0/2.0;
 	
 		float r = sqrt(dot(p,p));
 		
@@ -204,6 +204,56 @@ addFilters {
 			uv.y = r * sin(a);
 		}
 
+        vec3 col = texture2D(tex0, uv).xyz;
+
+        gl_FragColor = vec4(col,1.0);
+    }
+    """
+  spiral: """
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+
+    uniform vec2 resolution;
+    uniform sampler2D tex0;
+
+	uniform float symmetry;
+	uniform float twist;
+
+    void main(void)
+    {
+        float divider = 3.1416/(2.0 + symmetry*50.0);
+        vec2 p = 0.5 - gl_FragCoord.xy / resolution.xy;
+
+		float b = twist + 0.05;
+		float a = 0.01;
+		float angle = atan(p.y, p.x);
+		float r = sqrt(dot(p,p));
+		
+		float period = 0.0;
+		float newOne = 0.0;
+		for (int i = 0; i < 1000; i++) {
+			newOne = a*exp(b*(angle + period * 2.0 * 3.1416));
+			period++;
+			if (newOne > r) break;
+		}
+		
+		float newZero = a*exp(b*(angle + (period - 2.0) * 2.0 * 3.1416));
+		r = (r - newZero)/(newOne - newZero);
+		
+        vec2 uv;
+		
+		if (mod(floor(angle/divider), 2.0) == 0.0) {
+			angle = mod(angle, divider);
+			uv.x = r * cos(angle);
+			uv.y = r * sin(angle);
+		}
+		else {
+			angle = divider - mod(angle, divider);
+			uv.x = r * cos(angle);
+			uv.y = r * sin(angle);
+		}
+		
         vec3 col = texture2D(tex0, uv).xyz;
 
         gl_FragColor = vec4(col,1.0);
@@ -555,7 +605,7 @@ addFilters {
 
     void main(void)
     {
-        float sixty = 3.146/3.0;
+        float sixty = 3.1416/3.0;
         vec2 p = 0.5 - gl_FragCoord.xy / resolution.xy;
 
 		float a;
@@ -563,9 +613,9 @@ addFilters {
             a = abs(atan(p.x/p.y));
         else
             a = abs(atan(p.y/p.x));
-        if (p.x < 0.0 && p.y >= 0.0 ) a += 3.146/2.0;
-        if (p.x < 0.0 && p.y < 0.0 ) a += 3.146;
-        if (p.x > 0.0 && p.y < 0.0 ) a += 3.146*3.0/2.0;
+        if (p.x < 0.0 && p.y >= 0.0 ) a += 3.1416/2.0;
+        if (p.x < 0.0 && p.y < 0.0 ) a += 3.1416;
+        if (p.x > 0.0 && p.y < 0.0 ) a += 3.1416*3.0/2.0;
 	
 		float r = sqrt(dot(p,p));
 		
